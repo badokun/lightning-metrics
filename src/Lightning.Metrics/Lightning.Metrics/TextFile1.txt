@@ -1,0 +1,7 @@
+﻿notes
+
+look at https://github.com/dotnet/dotnet-docker/blob/master/samples/dotnetapp/Dockerfile
+
+https://github.com/btcpayserver/BTCPayServer.Lightning/blob/master/src/BTCPayServer.Lightning.LND/LndSwaggerClient.cs
+
+client: https://github.com/btcpayserver/BTCPayServer.Lightning

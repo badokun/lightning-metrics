@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lightning.Metrics", "src\Lightning.Metrics\Lightning.Metrics.csproj", "{E87ACE51-4981-4CBE-98A5-BBB529CFEC50}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lightning.Metrics.App", "Lightning.Metrics.App\Lightning.Metrics.App.csproj", "{AA698DC3-9082-462E-9689-14E3A14DE47A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lightning.Metrics.App", "src\Lightning.Metrics.App\Lightning.Metrics.App.csproj", "{AA698DC3-9082-462E-9689-14E3A14DE47A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{207A500B-1A1F-4CC1-BF4D-34F7B6B00F41}"
 	ProjectSection(SolutionItems) = preProject

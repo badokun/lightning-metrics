@@ -45,6 +45,18 @@ the `no-macaroons` option should be set to true.
 
 ` docker exec -it c10b584e3210 /usr/bin/influx`
 
+### Restarting Lnd
+
+`sudo systemctl start lnd`
+
+Follow the tail:
+`sudo journalctl -f -u lnd`
+
+
+### Testnet
+
+https://lnroute.com/testnet-faucets/
+
 ---
 
 notes

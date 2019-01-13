@@ -58,7 +58,7 @@ namespace Lightning.Metrics
                 catch (Exception e)
                 {
                     Logger.Error(e.Message);
-
+                    client = new LndClient(restSet, _configuration.Network == Network.Main ? NBitcoin.Network.Main : NBitcoin.Network.TestNet);
                 }
            
                 Thread.Sleep(TimeSpan.FromSeconds(_configuration.IntervalSeconds));

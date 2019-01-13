@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Lightning.Metrics\Lightning.Metrics.csproj" />
+    <ProjectReference Include="..\Lightning.Metrics\Lightning.Metrics.csproj" />
   </ItemGroup>
-
+ 
 </Project>

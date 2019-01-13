@@ -37,7 +37,25 @@ the `no-macaroons` option should be set to true.
     * balance
 
 
+## Development
 
+### Docker
+
+
+#### Raspberry
+
+```
+docker build -t lnd-metrics:arm -f Raspberry.Dockerfile .
+docker tag lnd-metrics:arm badokun/lnd-metrics:arm
+docker push badokun/lnd-metrics:arm
+```
+
+#### Windows\Linux Distro
+```
+docker build -t lnd-metrics .
+docker tag lnd-metrics badokun/lnd-metrics:64
+docker push badokun/lnd-metrics:64
+```
 
 ## Troubleshooting
 
@@ -57,6 +75,14 @@ Follow the tail:
 
 https://lnroute.com/testnet-faucets/
 
+## Resources
+
+* [Lnd Rest Api](https://api.lightning.community/rest/index.html)
+* Setting the `tlsextraip` to `0.0.0.0` was [suggested here](https://github.com/lightningnetwork/lnd/issues/1567#issuecomment-437665324)
+* Lnd configuration [reference](https://github.com/lightningnetwork/lnd/blob/master/sample-lnd.conf)
+* [RaspiBolt Guide](https://github.com/badokun/guides/tree/master/raspibolt)
+
+* Automated Docker builds - https://docs.docker.com/docker-hub/builds/
 ---
 
 notes

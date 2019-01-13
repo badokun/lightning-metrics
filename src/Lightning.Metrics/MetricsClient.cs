@@ -23,14 +23,12 @@ namespace Lightning.Metrics
 
         public async Task Start()
         {
-            Logger.Debug($"Application starting using Lnd Api: {_configuration.LndRestApiUri} and InfluxDb: {_configuration.InfluxDbUri} on a {_configuration.IntervalSeconds} second interval");
-            var restSet = new LndRestSettings()
-            {
-                AllowInsecure = _configuration.LndRestApiAllowInsecure,
-                Uri = _configuration.LndRestApiUri
-            };
-
-            var client = new LndClient(restSet, _configuration.Network == Network.Main? NBitcoin.Network.Main : NBitcoin.Network.TestNet);
+            Logger.Debug($"Application starting");
+            Logger.Debug($"LND Api  {_configuration.LndRestApiUri}");
+            Logger.Debug($"InfluxDb {_configuration.InfluxDbUri}");
+            Logger.Debug($"Interval {_configuration.IntervalSeconds} seconds");
+            
+            var client = CreateLndClient();
             
             var metrics = new CollectorConfiguration()
                 .Tag.With("host", Environment.MachineName)
@@ -58,13 +56,44 @@ namespace Lightning.Metrics
                 catch (Exception e)
                 {
                     Logger.Error(e.Message);
-                    client = new LndClient(restSet, _configuration.Network == Network.Main ? NBitcoin.Network.Main : NBitcoin.Network.TestNet);
+                    client = CreateLndClient();
                 }
            
                 Thread.Sleep(TimeSpan.FromSeconds(_configuration.IntervalSeconds));
             }
         }
-        
+
+        public void TestInfluxDb()
+        {
+            var metrics = new CollectorConfiguration()
+                .Tag.With("host", Environment.MachineName)
+                .Batch.AtInterval(TimeSpan.FromSeconds(_configuration.IntervalSeconds))
+                .WriteTo.InfluxDB(_configuration.InfluxDbUri, _configuration.InfluxDbName)
+                .CreateCollector();
+            
+            metrics.Write($"{_configuration.MetricPrefix}_influxDbTest", new Dictionary<string, object> { {"test", "1" } });
+
+            Logger.Debug("InfluxDb write operation completed successfully");
+        }
+
+        public void TestLndApi()
+        {
+            var client = CreateLndClient();
+            var balanceTest =  client.SwaggerClient.WalletBalanceAsync();
+            balanceTest.Wait();
+            Logger.Debug("LndApi test operation completed successfully");
+        }
+
+        private LndClient CreateLndClient()
+        {
+            var restSet = new LndRestSettings()
+            {
+                AllowInsecure = _configuration.LndRestApiAllowInsecure,
+                Uri = _configuration.LndRestApiUri
+            };
+
+            return new LndClient(restSet, _configuration.Network == Network.Main ? NBitcoin.Network.Main : NBitcoin.Network.TestNet);
+        }
     }
 
 

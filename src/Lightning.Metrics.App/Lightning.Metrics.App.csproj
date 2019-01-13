@@ -4,14 +4,22 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <RootNamespace>Lightning.Metrics.App</RootNamespace>
+    <AssemblyName>lnd-metrics</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="metrics.conf" />
+    <None Remove="metrics.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentCommandLineParser" Version="1.4.3" />
+    <Content Include="metrics.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.3.0" />
   </ItemGroup>
 
   <ItemGroup>

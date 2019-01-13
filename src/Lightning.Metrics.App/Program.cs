@@ -1,40 +1,34 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
-using System.Reflection.Metadata;
-using System.Runtime.InteropServices;
-using Fclp;
+using McMaster.Extensions.CommandLineUtils;
 using Newtonsoft.Json;
+// ReSharper disable UnassignedGetOnlyAutoProperty
 
 namespace Lightning.Metrics.App
 {
     class Program
     {
-        static void Main(string[] args)
+        public static int Main(string[] args)
+            => CommandLineApplication.Execute<Program>(args);
+        
+        [FileExists]
+        [Option("--configPath <FILE>", Description = "The metrics.json configuration path")]
+        [Required]
+        public string ConfigPath { get; }
+
+        [Option("--test-influxDb", Description = "Test connectivity to the InfluxDb")]
+        public bool TestInfluxDb { get; }
+
+        [Option("--test-lndApi", Description = "Test connectivity to the Lnd Rest Api")]
+        public bool TestLndApi { get; }
+
+        private void OnExecute()
         {
-            var configPath = string.Empty;
-            var p = new FluentCommandLineParser();
-            p.Setup<string>("configPath")
-                .Callback(value => configPath = value)
-                .Required()
-                .WithDescription("The configuration file's path. E.g. metrics.json");
-
-            var result = p.Parse(args);
-            if (result.HasErrors)
-            {
-                Console.WriteLine(result.ErrorText);
-                Environment.Exit(1);
-            }
-
-            if (!File.Exists(configPath))
-            {
-                Console.WriteLine($"The {nameof(configPath)} {configPath} does not exist");
-                Environment.Exit(1);
-            }
-
             MetricsConfiguration config = null;
             try
             {
-                config = JsonConvert.DeserializeObject<MetricsConfiguration>(File.ReadAllText(configPath));
+                config = JsonConvert.DeserializeObject<MetricsConfiguration>(File.ReadAllText(ConfigPath));
                 config.Validate();
             }
             catch (Exception e)
@@ -46,15 +40,24 @@ namespace Lightning.Metrics.App
             try
             {
                 var client = new MetricsClient(config);
-
-                client.Start().Wait();
+                if (TestInfluxDb)
+                {
+                    client.TestInfluxDb();
+                }
+                else if (TestLndApi)
+                {
+                    client.TestLndApi();
+                }
+                else
+                {
+                    client.Start().Wait();
+                }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 Environment.Exit(1);
             }
-            
         }
     }
 }

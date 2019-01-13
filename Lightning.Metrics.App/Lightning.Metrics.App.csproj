@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <RootNamespace>Lightning.Metrics.App</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="metrics.conf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentCommandLineParser" Version="1.4.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\Lightning.Metrics\Lightning.Metrics.csproj" />
+  </ItemGroup>
+
+</Project>

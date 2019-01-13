@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Lightning.Metrics.App": {
+      "commandName": "Project",
+      "commandLineArgs": "--configPath metrics.json"
+    }
+  }
+}

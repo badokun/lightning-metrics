@@ -4,4 +4,14 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="TextFile1.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BTCPayServer.Lightning.All" Version="1.1.0.4" />
+    <PackageReference Include="BTCPayServer.Lightning.LND" Version="1.1.0.5" />
+    <PackageReference Include="InfluxDB.Collector" Version="1.1.0" />
+  </ItemGroup>
+
 </Project>

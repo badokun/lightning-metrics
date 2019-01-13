@@ -1,0 +1,15 @@
+﻿{
+  "InfluxDbUri": "http://192.168.1.40:8086",
+  "InfluxDbName": "telegraf",
+
+  "Network": "TestNet",
+
+  "IntervalSeconds": 10,
+
+  "LndRestApiUri": "https://192.168.1.40:8080",
+  "LndRestApiAllowInsecure": true,
+
+  "MetricPrefix": "lightning" 
+
+
+}

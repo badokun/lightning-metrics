@@ -46,8 +46,20 @@ the `no-macaroons` option should be set to true.
 
 The Raspberry image has to be built on a Raspberry device to get around ARM architecture related issues
 
+* Build the docker container
 ```
 docker build -t lnd-metrics:arm -f Raspberry.Dockerfile .
+```
+* If it builds without errors run the container to ensure it works as expected. We're using the `--net=host` flag to since our RaspiBolt `ufw` rule has allowed local traffic only. Without this flag you need to ensure the Docker host's IP address has also been allowed to the `ufw` rule.
+
+```
+docker run --net=host --restart always -v /home/admin/projects/lightning-metrics/src/Lightning.Metrics.App:/data -d --name lnd-metrics  lnd-metrics:arm --configPath /data/metrics.json
+```
+
+
+
+```
+docker logs lnd-metrics
 docker tag lnd-metrics:arm badokun/lnd-metrics:arm
 docker push badokun/lnd-metrics:arm
 ```

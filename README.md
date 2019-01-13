@@ -44,6 +44,8 @@ the `no-macaroons` option should be set to true.
 
 #### Raspberry
 
+The Raspberry image has to be built on a Raspberry device to get around ARM architecture related issues
+
 ```
 docker build -t lnd-metrics:arm -f Raspberry.Dockerfile .
 docker tag lnd-metrics:arm badokun/lnd-metrics:arm

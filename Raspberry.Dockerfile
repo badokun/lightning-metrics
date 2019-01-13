@@ -18,7 +18,4 @@ RUN dotnet publish -c Release -r linux-arm -o out
 FROM microsoft/dotnet:2.2-runtime-deps-stretch-slim-arm32v7 AS runtime
 WORKDIR /app
 COPY --from=build /app/Lightning.Metrics.App/out ./
-ENTRYPOINT ["dotnet", "lnd-metrics.dll"]
-
-
-
+ENTRYPOINT ["./lnd-metrics"]

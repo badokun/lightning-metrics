@@ -3,42 +3,13 @@
 
 ## Overview
 
-This application will query a Lightning Node ([LND Rest API](https://api.lightning.community/rest/index.html)) and push all metrics into an InfluxDB which can be used as a data source for Grafana Dashboards similar to the populate [Telegraf](https://github.com/influxdata/telegraf) agent. 
+This application will query a Lightning Node ([LND Rest API](https://api.lightning.community/rest/index.html)) and push all metrics into an InfluxDB which can be 
+used as a data source for Grafana Dashboards similar to the popular [Telegraf](https://github.com/influxdata/telegraf) agent. 
 
 The [RaspiBolt](https://github.com/badokun/guides/blob/master/raspibolt/README.md) project served as motivation for setting this up in particular
-[Bonus guide: Performance Monitoring](https://github.com/badokun/guides/blob/master/raspibolt/raspibolt_71_monitoring.md). 
+[Bonus guide: Performance Monitoring](https://github.com/badokun/guides/blob/master/raspibolt/raspibolt_71_monitoring.md)
 
-![Grafana](resources/grafana-metrics.jpg)
-
-## Configuration
-
-The application is compiled as `lnd-metrics.dll` and uses the [LND Rest API](https://api.lightning.community/rest/index.html) which 
-requires the following configuration. On a RaspiBolt setup you will find the configuration file at `/home/bitcoin/.lnd/lnd.conf`
-
-```
-[Application Options]
-tlsextraip=0.0.0.0
-restlisten=0.0.0.0:8080
-no-macaroons=true
-```
-
-The `tlsextraip` is required if you plan on running the application on different machine to where the [Lightning Network Daemon](https://github.com/lightningnetwork/lnd) ️is running. To simplify configuration
-the `no-macaroons` option should be set to `true`.
-
-## Usage
-
-> Your Lightning Wallet needs to be unlocked for the LND REST API to return any data.
-
-### Command line
-`Lightning.Metrics.App.exe --help` 
-
-### Docker
-
-#### On Windows or Linux
-`docker run badokun/lnd-metrics:latest --help`
-
-#### On RaspBerry Pi
-`docker run badokun/lnd-metrics:arm32 --help`
+If you're looking to run this on a RaspiBolt [click here](RaspiBolt.md)
 
 ## Metrics
 
@@ -69,41 +40,42 @@ the `no-macaroons` option should be set to `true`.
     * graph_diameter
     * max_out_degree
 
-## Running on RaspiBolt
+## Configuration
 
-The easiest method to run metrics collection on a Raspberry Pi is by running the Docker image.
-
-* Test the connection to your LND REST API by adding `--test-lndApi`.
-* Test the connection to your InfluxDb by adding `--test-influxDb`.
-* See all options by adding `--help`
+The application is compiled as `lnd-metrics.dll` and uses the [LND Rest API](https://api.lightning.community/rest/index.html) which 
+requires the following configuration. 
 
 ```
- docker run --rm --net host --name lnd-metrics-arm32 \
-        badokun/lnd-metrics:arm32 \
-        --influxDbUri http://127.0.0.1:8086 \
-        --network testnet \
-        --lndRestApiUri https://127.0.0.1:8080 \
-        --help
+[Application Options]
+tlsextraip=0.0.0.0
+restlisten=0.0.0.0:8080
+no-macaroons=true
 ```
 
-When you've confirmed connectivity to both the LND REST API and InfluxDb you can ommit the `--rm` flag. Pro tip: to keep it always running on a restart add `--restart always`. The command below does this
+The `tlsextraip` is required if you plan on running the application on different machine to where the [Lightning Network Daemon](https://github.com/lightningnetwork/lnd) ️is running. To simplify configuration
+the `no-macaroons` option should be set to `true`.
 
-```
- docker run --restart always -d --net host --name lnd-metrics-arm32 \
-        badokun/lnd-metrics:arm32 \
-        --influxDbUri http://127.0.0.1:8086 \
-        --network testnet \
-        --lndRestApiUri https://127.0.0.1:8080
-```
+## Usage
 
+> Your Lightning Wallet needs to be unlocked for the LND REST API to return any data.
+
+### Command line
+
+`dotnet lnd-metrics.dll --influxDbUri http://192.168.1.40:8086 --network testnet --lndRestApiUri https://192.168.1.40:8080`
+
+To view all the options run
+
+`dotnet lnd-metrics.dll --help` 
+
+### Docker
+
+#### On Windows or Linux
+`docker run badokun/lnd-metrics:latest --help`
+
+#### On RaspBerry Pi
+`docker run badokun/lnd-metrics:arm32 --help`
 
 ## Development
-
-### Release Management
-
-- Bump the release version in Lightning.Metrics.App
-- Run `powershell ./publish-docker.ps1` which will create git tags and push to GitHub.
-- Docker images are automatically built
 
 ### Docker
 
@@ -131,43 +103,11 @@ docker tag lnd-metrics:latest badokun/lnd-metrics:latest
 docker push badokun/lnd-metrics:latest
 ```
 
-#### Raspberry
+### Release Management
 
-The Raspberry image has to be built on a Raspberry device to get around ARM architecture related issues
-
-
-* If it builds without errors run the container to ensure it works as expected. We're using the `--net=host` flag to since our RaspiBolt `ufw` rule has allowed local traffic only. Without this flag you need to ensure the Docker host's IP address has also been allowed to the `ufw` rule.
-
-```
-docker run --net=host --restart always -v /home/admin/projects/lightning-metrics/src/Lightning.Metrics.App:/data -d --name lnd-metrics  lnd-metrics:arm --configPath /data/metrics.json
-```
-
-
-```
-docker logs lnd-metrics
-docker tag lnd-metrics:arm badokun/lnd-metrics:arm
-docker push badokun/lnd-metrics:arm
-```
-
-## Troubleshooting
-
-### Inspect the logs
-
-If no metrics are being sent to InfluxDb you can run the following command to get the logs
-`docker logs lnd-metrics-arm32`
-
-If the logs are littered with messages like below, you need to `unlock` your wallet. In some cases you 
-may need to restart your Lnd daemon (see below)
-
-`2019-01-14T12:29:47.7104245+00:00 ERROR The HTTP status code of the response was not expected (404).`
-
-### Restarting Lnd daemon
-
-`sudo systemctl start lnd`
-
-Follow the tail:
-`sudo journalctl -f -u lnd`
-
+- Bump the release version in Lightning.Metrics.App.csproj
+- Run `powershell ./publish-docker.ps1` which will create git tags and push to GitHub.
+- Docker images are automatically built
 
 ### Testnet
 
@@ -179,4 +119,3 @@ Get some free testnet bitcoins at https://lnroute.com/testnet-faucets/
 * Setting the `tlsextraip` to `0.0.0.0` was [suggested here](https://github.com/lightningnetwork/lnd/issues/1567#issuecomment-437665324)
 * Lnd configuration [reference](https://github.com/lightningnetwork/lnd/blob/master/sample-lnd.conf)
 * [RaspiBolt Guide](https://github.com/badokun/guides/tree/master/raspibolt)
-* Automated Docker builds - https://docs.docker.com/docker-hub/builds/

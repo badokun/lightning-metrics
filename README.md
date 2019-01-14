@@ -3,15 +3,17 @@
 
 ## Overview
 
-This application will query a lightning node and push all metrics into an InfluxDB which can be used as a data source for Grafana Dashboards. 
-The [RaspiBolt](https://github.com/badokun/guides/blob/master/raspibolt/README.md) project served as motivation for setting this up, and in particular
+This application will query a Lightning Node ([LND Rest API](https://api.lightning.community/rest/index.html)) and push all metrics into an InfluxDB which can be used as a data source for Grafana Dashboards similar to the populate [Telegraf](https://github.com/influxdata/telegraf) agent. 
+
+The [RaspiBolt](https://github.com/badokun/guides/blob/master/raspibolt/README.md) project served as motivation for setting this up in particular
 [Bonus guide: Performance Monitoring](https://github.com/badokun/guides/blob/master/raspibolt/raspibolt_71_monitoring.md). 
 
 ![Grafana](resources/grafana-metrics.jpg)
 
 ## Configuration
 
-Lightning-Metrics uses the [LND Rest API](https://api.lightning.community/rest/index.html) which requires the following configuration. On a RaspiBolt setup you will find the configuration file at `/home/bitcoin/.lnd/lnd.conf`
+The application is compiled as `lnd-metrics.dll` and uses the [LND Rest API](https://api.lightning.community/rest/index.html) which 
+requires the following configuration. On a RaspiBolt setup you will find the configuration file at `/home/bitcoin/.lnd/lnd.conf`
 
 ```
 [Application Options]
@@ -24,6 +26,8 @@ The `tlsextraip` is required if you plan on running the application on different
 the `no-macaroons` option should be set to `true`.
 
 ## Usage
+
+> Your Lightning Wallet needs to be unlocked for the LND REST API to return any data.
 
 ### Command line
 `Lightning.Metrics.App.exe --help` 
@@ -95,6 +99,12 @@ When you've confirmed connectivity to both the LND REST API and InfluxDb you can
 
 ## Development
 
+### Release Management
+
+- Bump the release version in Lightning.Metrics.App
+- Run `powershell ./publish-docker.ps1` which will create git tags and push to GitHub.
+- Docker images are automatically built
+
 ### Docker
 
 #### Building a Raspberry compatible image on a Windows or Linux machine
@@ -121,8 +131,6 @@ docker tag lnd-metrics:latest badokun/lnd-metrics:latest
 docker push badokun/lnd-metrics:latest
 ```
 
-
-
 #### Raspberry
 
 The Raspberry image has to be built on a Raspberry device to get around ARM architecture related issues
@@ -135,7 +143,6 @@ docker run --net=host --restart always -v /home/admin/projects/lightning-metrics
 ```
 
 
-
 ```
 docker logs lnd-metrics
 docker tag lnd-metrics:arm badokun/lnd-metrics:arm
@@ -144,11 +151,17 @@ docker push badokun/lnd-metrics:arm
 
 ## Troubleshooting
 
-### Accessing InfluxDb through Docker
+### Inspect the logs
 
-` docker exec -it c10b584e3210 /usr/bin/influx`
+If no metrics are being sent to InfluxDb you can run the following command to get the logs
+`docker logs lnd-metrics-arm32`
 
-### Restarting Lnd
+If the logs are littered with messages like below, you need to `unlock` your wallet. In some cases you 
+may need to restart your Lnd daemon (see below)
+
+`2019-01-14T12:29:47.7104245+00:00 ERROR The HTTP status code of the response was not expected (404).`
+
+### Restarting Lnd daemon
 
 `sudo systemctl start lnd`
 
@@ -158,7 +171,7 @@ Follow the tail:
 
 ### Testnet
 
-https://lnroute.com/testnet-faucets/
+Get some free testnet bitcoins at https://lnroute.com/testnet-faucets/
 
 ## Resources
 
@@ -166,14 +179,4 @@ https://lnroute.com/testnet-faucets/
 * Setting the `tlsextraip` to `0.0.0.0` was [suggested here](https://github.com/lightningnetwork/lnd/issues/1567#issuecomment-437665324)
 * Lnd configuration [reference](https://github.com/lightningnetwork/lnd/blob/master/sample-lnd.conf)
 * [RaspiBolt Guide](https://github.com/badokun/guides/tree/master/raspibolt)
-
 * Automated Docker builds - https://docs.docker.com/docker-hub/builds/
----
-
-notes
-
-look at https://github.com/dotnet/dotnet-docker/blob/master/samples/dotnetapp/Dockerfile
-
-https://github.com/btcpayserver/BTCPayServer.Lightning/blob/master/src/BTCPayServer.Lightning.LND/LndSwaggerClient.cs
-
-client: https://github.com/btcpayserver/BTCPayServer.Lightning

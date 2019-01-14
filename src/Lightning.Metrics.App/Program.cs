@@ -11,11 +11,32 @@ namespace Lightning.Metrics.App
     {
         public static int Main(string[] args)
             => CommandLineApplication.Execute<Program>(args);
-        
-        [FileExists]
-        [Option("--configPath <FILE>", Description = "The metrics.json configuration path")]
+
+
+        [Option("--influxDbUri", Description = "The InfluxDb Uri. E.g. http://192.168.1.40:8086")]
         [Required]
-        public string ConfigPath { get; }
+        public Uri InfluxDbUri { get; }
+
+        [Option("--network", Description = "The bitcoin network. TestNet or Main")]
+        [Required]
+        public Network Network { get; } = Network.TestNet;
+
+        [Option("--lndRestApiUri", Description = "The Lnd Rest Api Uri. E.g https://192.168.1.40:8080")]
+        [Required]
+        public Uri LndRestApiUri { get; }
+
+        [Option("--lndRestApiAllowInsecure", Description = "Allow Insecure Requests to the Lnd Rest Api. Defaults to true")]
+        public bool LndRestApiAllowInsecure { get; } = true;
+
+        [Option("--interval", Description = "The interval in seconds to request metrics. Defaults to 10")]
+        public int IntervalSeconds { get; } = 10;
+
+        [Option("--influxDbName", Description = "The InfluxDb database name. Defaults to telegraf")]
+        public string InfluxDbName { get; } = "telegraf";
+
+        [Option("--metricPrefix", Description = "Prefix all metrics pushed into the InfluxDb. Defaults to lightning")]
+        public string MetricPrefix { get; } = "lightning";
+        
 
         [Option("--test-influxDb", Description = "Test connectivity to the InfluxDb")]
         public bool TestInfluxDb { get; }
@@ -28,7 +49,17 @@ namespace Lightning.Metrics.App
             MetricsConfiguration config = null;
             try
             {
-                config = JsonConvert.DeserializeObject<MetricsConfiguration>(File.ReadAllText(ConfigPath));
+                config = new MetricsConfiguration()
+                {
+                    InfluxDbUri = InfluxDbUri,
+                    Network = Network,
+                    LndRestApiUri = LndRestApiUri,
+                    LndRestApiAllowInsecure = LndRestApiAllowInsecure,
+                    IntervalSeconds = IntervalSeconds,
+                    InfluxDbName = InfluxDbName,
+                    MetricPrefix = MetricPrefix
+                };
+
                 config.Validate();
             }
             catch (Exception e)

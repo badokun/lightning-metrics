@@ -5,6 +5,8 @@ namespace Lightning.Metrics.MetricConverters
 {
     public class LnrpcWalletBalanceResponseMetric : IMetricConverter<LnrpcWalletBalanceResponse>
     {
+        public string MetricName => "balance";
+
         public Dictionary<string, object> ToDictionary(LnrpcWalletBalanceResponse balance)
         {
             return new Dictionary<string, object>

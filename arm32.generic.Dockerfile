@@ -1,4 +1,4 @@
-# When building the image on a Windows/Linux machine targetting the same platform
+# When targetting a Raspberry Pi
 
 FROM microsoft/dotnet:2.2-sdk AS build
 WORKDIR /app
@@ -15,16 +15,9 @@ WORKDIR /app/
 COPY src/Lightning.Metrics.App/. ./Lightning.Metrics.App/
 COPY src/Lightning.Metrics/. ./Lightning.Metrics/
 WORKDIR /app/Lightning.Metrics.App
-RUN dotnet publish -c Release -o out
+RUN dotnet publish -c Release -r linux-arm -o out
 
-
-# test application -- see: dotnet-docker-unit-testing.md
-# FROM build AS testrunner
-# WORKDIR /app/tests
-# COPY tests/. .
-# ENTRYPOINT ["dotnet", "test", "--logger:trx"]
-
-FROM microsoft/dotnet:2.2-runtime AS runtime
+FROM microsoft/dotnet:2.2-runtime-deps-stretch-slim-arm32v7 AS runtime
 WORKDIR /app
 COPY --from=build /app/Lightning.Metrics.App/out ./
-ENTRYPOINT ["dotnet", "lnd-metrics.dll"]
+ENTRYPOINT ["./lnd-metrics"]

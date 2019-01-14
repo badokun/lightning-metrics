@@ -1,3 +1,5 @@
+# When building the image on a Raspberry Pi targetting the same
+
 FROM microsoft/dotnet:2.2-sdk-stretch-arm32v7 AS build
 WORKDIR /app
 

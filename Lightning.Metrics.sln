@@ -9,8 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lightning.Metrics.App", "sr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{207A500B-1A1F-4CC1-BF4D-34F7B6B00F41}"
 	ProjectSection(SolutionItems) = preProject
+		arm32.generic.Dockerfile = arm32.generic.Dockerfile
+		arm32.on.raspberry.Dockerfile = arm32.on.raspberry.Dockerfile
 		Dockerfile = Dockerfile
-		Raspberry.Dockerfile = Raspberry.Dockerfile
 		README.md = README.md
 	EndProjectSection
 EndProject

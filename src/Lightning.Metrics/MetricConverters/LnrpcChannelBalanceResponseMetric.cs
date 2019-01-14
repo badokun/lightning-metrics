@@ -5,6 +5,8 @@ namespace Lightning.Metrics.MetricConverters
 {
     public class LnrpcChannelBalanceResponseMetric : IMetricConverter<LnrpcChannelBalanceResponse>
     {
+        public string MetricName => "channel_balance";
+
         public Dictionary<string, object> ToDictionary(LnrpcChannelBalanceResponse channelbalance)
         {
             return new Dictionary<string, object>

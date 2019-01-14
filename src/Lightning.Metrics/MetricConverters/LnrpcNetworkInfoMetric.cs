@@ -5,6 +5,8 @@ namespace Lightning.Metrics.MetricConverters
 { 
     public class LnrpcNetworkInfoMetric: IMetricConverter<LnrpcNetworkInfo>
     {
+        public string MetricName => "networkinfo";
+
         public Dictionary<string, object> ToDictionary(LnrpcNetworkInfo networkinfo)
         {
             return new Dictionary<string, object>

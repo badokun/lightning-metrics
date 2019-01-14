@@ -27,7 +27,8 @@ namespace Lightning.Metrics
             Logger.Debug($"LND Api  {_configuration.LndRestApiUri}");
             Logger.Debug($"InfluxDb {_configuration.InfluxDbUri}");
             Logger.Debug($"Interval {_configuration.IntervalSeconds} seconds");
-            
+            Logger.Debug($"Colleting metrics commencing");
+
             var client = CreateLndClient();
             
             var metrics = new CollectorConfiguration()
@@ -48,9 +49,9 @@ namespace Lightning.Metrics
                     var channelbalance = await client.SwaggerClient.ChannelBalanceAsync();
                     var networkinfo = await client.SwaggerClient.GetNetworkInfoAsync();
 
-                    metrics.Write($"{_configuration.MetricPrefix}_balance", walletResponseConverter.ToDictionary(balance));
-                    metrics.Write($"{_configuration.MetricPrefix}_channel_balance", channelBalanceConverter.ToDictionary(channelbalance));
-                    metrics.Write($"{_configuration.MetricPrefix}_networkinfo", networkInfoConverter.ToDictionary(networkinfo));
+                    metrics.Write($"{_configuration.MetricPrefix}_{walletResponseConverter.MetricName}", walletResponseConverter.ToDictionary(balance));
+                    metrics.Write($"{_configuration.MetricPrefix}_{channelBalanceConverter.MetricName}", channelBalanceConverter.ToDictionary(channelbalance));
+                    metrics.Write($"{_configuration.MetricPrefix}_{networkInfoConverter.MetricName}", networkInfoConverter.ToDictionary(networkinfo));
 
                 }
                 catch (Exception e)

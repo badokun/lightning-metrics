@@ -7,6 +7,8 @@ This application will query a lightning node and push all metrics into an Influx
 The [RaspiBolt](https://github.com/badokun/guides/blob/master/raspibolt/README.md) project served as motivation for setting this up, and in particular
 [Bonus guide: Performance Monitoring](https://github.com/badokun/guides/blob/master/raspibolt/raspibolt_71_monitoring.md). 
 
+![Grafana](resources/grafana-metrics.jpg)
+
 ## Configuration
 
 Lightning-Metrics uses the [LND Rest API](https://api.lightning.community/rest/index.html) which requires the following configuration. On a RaspiBolt setup you will find the configuration file at `/home/bitcoin/.lnd/lnd.conf`

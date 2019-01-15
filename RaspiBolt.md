@@ -67,10 +67,10 @@ When you've confirmed connectivity to both the LND REST API and InfluxDb you can
 When a new lnd-metrics docker image is released perform the following to upgrade
 ```
 docker pull badokun/lnd-metrics:arm32
-docker stop lnd-metrics
-docker rm lnd-metrics
+docker stop lnd-metrics-arm32
+docker rm lnd-metrics-arm32
 
- docker run --restart always -d --net host --name lnd-metrics-arm32 \
+docker run --restart always -d --net host --name lnd-metrics-arm32 \
         badokun/lnd-metrics:arm32 \
         --influxDbUri http://127.0.0.1:8086 \
         --network testnet \

@@ -13,6 +13,18 @@ If you're looking to run this on a RaspiBolt [click here](RaspiBolt.md)
 
 ## Metrics
 
+* pending_open_channels
+  * tags:
+    * host
+    * remote_node_pub
+    * channel_point
+  * fields:
+    * capacity
+    * local_balance
+    * remote_balance
+    * commit_fee
+    * commit_weight
+    * fee_per_kw
 * channel_balance
   * tags:
     * host

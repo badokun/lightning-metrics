@@ -40,18 +40,27 @@ namespace Lightning.Metrics
             var walletResponseConverter = new LnrpcWalletBalanceResponseMetric();
             var channelBalanceConverter = new LnrpcChannelBalanceResponseMetric();
             var networkInfoConverter = new LnrpcNetworkInfoMetric();
+            var pendingOpenChannelConverter = new PendingChannelsResponsePendingOpenChannelMetric();
 
             while (true)
             {
                 try
                 {
                     var balance = await client.SwaggerClient.WalletBalanceAsync();
-                    var channelbalance = await client.SwaggerClient.ChannelBalanceAsync();
-                    var networkinfo = await client.SwaggerClient.GetNetworkInfoAsync();
+                    var channelBalance = await client.SwaggerClient.ChannelBalanceAsync();
+                    var networkInfo = await client.SwaggerClient.GetNetworkInfoAsync();
+                    var pendingChannels = await client.SwaggerClient.PendingChannelsAsync();
 
-                    metrics.Write($"{_configuration.MetricPrefix}_{walletResponseConverter.MetricName}", walletResponseConverter.ToDictionary(balance));
-                    metrics.Write($"{_configuration.MetricPrefix}_{channelBalanceConverter.MetricName}", channelBalanceConverter.ToDictionary(channelbalance));
-                    metrics.Write($"{_configuration.MetricPrefix}_{networkInfoConverter.MetricName}", networkInfoConverter.ToDictionary(networkinfo));
+                    metrics.Write($"{_configuration.MetricPrefix}_{walletResponseConverter.MetricName}", walletResponseConverter.GetFields(balance));
+                    metrics.Write($"{_configuration.MetricPrefix}_{channelBalanceConverter.MetricName}", channelBalanceConverter.GetFields(channelBalance));
+                    metrics.Write($"{_configuration.MetricPrefix}_{networkInfoConverter.MetricName}", networkInfoConverter.GetFields(networkInfo));
+
+                    foreach (var pendingOpen in pendingChannels.Pending_open_channels)
+                    {
+                        metrics.Write($"{_configuration.MetricPrefix}_{pendingOpenChannelConverter.MetricName}", pendingOpenChannelConverter.GetFields(pendingOpen), pendingOpenChannelConverter.GetTags(pendingOpen));
+                    }
+
+
 
                 }
                 catch (Exception e)

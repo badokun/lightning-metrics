@@ -7,12 +7,12 @@ namespace Lightning.Metrics.MetricConverters
     {
         public string MetricName => "channel_balance";
 
-        public Dictionary<string, object> ToDictionary(LnrpcChannelBalanceResponse channelbalance)
+        public Dictionary<string, object> GetFields(LnrpcChannelBalanceResponse channelbalance)
         {
             return new Dictionary<string, object>
             {
-                {  nameof(channelbalance.Balance).ToLowerInvariant(), channelbalance.Balance != null ? long.Parse(channelbalance.Balance): 0 },
-                {  nameof(channelbalance.Pending_open_balance).ToLowerInvariant(), channelbalance.Pending_open_balance != null ? long.Parse(channelbalance.Pending_open_balance): 0}
+                {  nameof(channelbalance.Balance).ToLowerInvariant(), channelbalance.Balance.ToLong() },
+                {  nameof(channelbalance.Pending_open_balance).ToLowerInvariant(), channelbalance.Pending_open_balance.ToLong() }
             };
         }
     }

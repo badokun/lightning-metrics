@@ -62,6 +62,21 @@ When you've confirmed connectivity to both the LND REST API and InfluxDb you can
         --lndRestApiUri https://127.0.0.1:8080
 ```
 
+### Upgrading
+
+When a new lnd-metrics docker image is released perform the following to upgrade
+```
+docker pull badokun/lnd-metrics:arm32
+docker stop lnd-metrics
+docker rm lnd-metrics
+
+ docker run --restart always -d --net host --name lnd-metrics-arm32 \
+        badokun/lnd-metrics:arm32 \
+        --influxDbUri http://127.0.0.1:8086 \
+        --network testnet \
+        --lndRestApiUri https://127.0.0.1:8080
+```
+
 ## Grafana Dashboard
 
 Add a new dashboard in Grafana (refer to the [Bonus guide: Performance Monitoring](https://github.com/badokun/guides/blob/master/raspibolt/raspibolt_71_monitoring.md) on how to do this)

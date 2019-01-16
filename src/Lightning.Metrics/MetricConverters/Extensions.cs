@@ -4,6 +4,8 @@ namespace Lightning.Metrics.MetricConverters
 {
     public static class Extensions
     {
+        public const int TagSize = 5;
+
         public static long ToLong(this string value)
         {
             return value != null ? long.Parse(value) : 0;

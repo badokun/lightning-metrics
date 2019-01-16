@@ -25,6 +25,27 @@ If you're looking to run this on a RaspiBolt [click here](RaspiBolt.md)
     * commit_fee
     * commit_weight
     * fee_per_kw
+* forced_closed_channels
+  * tags:
+    * host
+	* remote_node_pub
+  * fields:
+    * capacity
+	* remote_balance
+	* local_balance
+	* blocks_til_maturity
+	* limbo_balance
+	* maturity_height
+	* recovered_balance
+* pending_htlcs (as child of forced_closed_channels)
+  * tags:
+    * closing_txid
+  * fields:
+    * Amount
+	* Stage
+	* Outpoint
+	* Blocks_til_maturity
+	* Maturity_height
 * channel_balance
   * tags:
     * host

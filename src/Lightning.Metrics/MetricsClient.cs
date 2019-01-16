@@ -41,6 +41,8 @@ namespace Lightning.Metrics
             var channelBalanceConverter = new LnrpcChannelBalanceResponseMetric();
             var networkInfoConverter = new LnrpcNetworkInfoMetric();
             var pendingOpenChannelConverter = new PendingChannelsResponsePendingOpenChannelMetric();
+            var pendingForceClosedChannelConverter = new PendingChannelsResponseForceClosedChannelMetrics();
+            
 
             while (true)
             {
@@ -50,18 +52,42 @@ namespace Lightning.Metrics
                     var channelBalance = await client.SwaggerClient.ChannelBalanceAsync();
                     var networkInfo = await client.SwaggerClient.GetNetworkInfoAsync();
                     var pendingChannels = await client.SwaggerClient.PendingChannelsAsync();
-
+                    
                     metrics.Write($"{_configuration.MetricPrefix}_{walletResponseConverter.MetricName}", walletResponseConverter.GetFields(balance));
                     metrics.Write($"{_configuration.MetricPrefix}_{channelBalanceConverter.MetricName}", channelBalanceConverter.GetFields(channelBalance));
                     metrics.Write($"{_configuration.MetricPrefix}_{networkInfoConverter.MetricName}", networkInfoConverter.GetFields(networkInfo));
 
-                    foreach (var pendingOpen in pendingChannels.Pending_open_channels)
+                    if (pendingChannels.Pending_open_channels != null)
                     {
-                        metrics.Write($"{_configuration.MetricPrefix}_{pendingOpenChannelConverter.MetricName}", pendingOpenChannelConverter.GetFields(pendingOpen), pendingOpenChannelConverter.GetTags(pendingOpen));
+                        foreach (var pendingOpen in pendingChannels.Pending_open_channels)
+                        {
+                            metrics.Write(
+                                $"{_configuration.MetricPrefix}_{pendingOpenChannelConverter.MetricName}",
+                                pendingOpenChannelConverter.GetFields(pendingOpen),
+                                pendingOpenChannelConverter.GetTags(pendingOpen));
+                        }
                     }
 
+                    if (pendingChannels.Pending_force_closing_channels != null)
+                    {
+                        foreach (var pendingForceCLose in pendingChannels.Pending_force_closing_channels)
+                        {
 
+                            metrics.Write(
+                                $"{_configuration.MetricPrefix}_{pendingForceClosedChannelConverter.MetricName}",
+                                pendingForceClosedChannelConverter.GetFields(pendingForceCLose),
+                                pendingForceClosedChannelConverter.GetTags(pendingForceCLose));
 
+                            var lnrpcPendingHtlc = new LnrpcPendingHtlcMetrics(pendingForceCLose);
+                            foreach (var pendingHtlcs in pendingForceCLose.Pending_htlcs)
+                            {
+                                metrics.Write(
+                                    $"{_configuration.MetricPrefix}_{lnrpcPendingHtlc.MetricName}",
+                                    lnrpcPendingHtlc.GetFields(pendingHtlcs),
+                                    lnrpcPendingHtlc.GetTags(pendingHtlcs));
+                            }
+                        }
+                    }
                 }
                 catch (Exception e)
                 {

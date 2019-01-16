@@ -5,7 +5,7 @@ namespace Lightning.Metrics.MetricConverters
 {
     public class PendingChannelsResponsePendingOpenChannelMetric : IMetricConverterWithTags<PendingChannelsResponsePendingOpenChannel>
     {
-        private const int TagSize = 5;
+        
         public string MetricName => "pending_open_channels";
 
 
@@ -26,8 +26,8 @@ namespace Lightning.Metrics.MetricConverters
         {
             return new Dictionary<string, string>
             {
-                { nameof(metric.Channel.Remote_node_pub).ToLowerInvariant(), metric.Channel.Remote_node_pub.Left(TagSize) },
-                { nameof(metric.Channel.Channel_point).ToLowerInvariant(), metric.Channel.Channel_point.Left(TagSize) }
+                { nameof(metric.Channel.Remote_node_pub).ToLowerInvariant(), metric.Channel.Remote_node_pub.Left(Extensions.TagSize) },
+                { nameof(metric.Channel.Channel_point).ToLowerInvariant(), metric.Channel.Channel_point.Left(Extensions.TagSize) }
             };
         }
     }

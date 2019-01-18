@@ -25,9 +25,14 @@ namespace Lightning.Metrics.App
         [Required]
         public Uri LndRestApiUri { get; }
 
-        [Option("--lndRestApiAllowInsecure", Description = "Allow Insecure Requests to the Lnd Rest Api. Defaults to true")]
-        public bool LndRestApiAllowInsecure { get; } = true;
+        [Option("--macaroonHex", Description = "The hex string of the admin.macaroon file. See README.md on how to extract this value")]
+        [Required]
+        public string MacaroonHex { get; }
 
+        [Option("--certThumbprintHex", Description = "The hex string of the tls.cert. See README.md on how to extract this value")]
+        [Required]
+        public string CertThumbprintHex { get; }
+        
         [Option("--interval", Description = "The interval in seconds to request metrics. Defaults to 10")]
         public int IntervalSeconds { get; } = 10;
 
@@ -54,7 +59,8 @@ namespace Lightning.Metrics.App
                     InfluxDbUri = InfluxDbUri,
                     Network = Network,
                     LndRestApiUri = LndRestApiUri,
-                    LndRestApiAllowInsecure = LndRestApiAllowInsecure,
+                    MacaroonHex = MacaroonHex,
+                    CertThumbprintHex = CertThumbprintHex,
                     IntervalSeconds = IntervalSeconds,
                     InfluxDbName = InfluxDbName,
                     MetricPrefix = MetricPrefix

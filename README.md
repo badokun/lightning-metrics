@@ -82,11 +82,9 @@ requires the following configuration.
 [Application Options]
 tlsextraip=0.0.0.0
 restlisten=0.0.0.0:8080
-no-macaroons=true
 ```
 
-The `tlsextraip` is required if you plan on running the application on different machine to where the [Lightning Network Daemon](https://github.com/lightningnetwork/lnd) ️is running. To simplify configuration
-the `no-macaroons` option should be set to `true`.
+The `tlsextraip` is required if you plan on running the application on different machine to where the [Lightning Network Daemon](https://github.com/lightningnetwork/lnd) ️is running. 
 
 ## Usage
 
@@ -94,11 +92,27 @@ the `no-macaroons` option should be set to `true`.
 
 ### Command line
 
-`dotnet lnd-metrics.dll --influxDbUri http://192.168.1.40:8086 --network testnet --lndRestApiUri https://192.168.1.40:8080`
+```
+dotnet lnd-metrics.dll --influxDbUri http://192.168.1.40:8086 --network testnet --lndRestApiUri https://192.168.1.40:8080 --certThumbprintHex BC:C5:19:59:81:F0:2B:F3:FF:9B:72:56:C8:EA:16:F5:5B:72:91:3D:BB:2C:13:7C:C6:6F:02:C3:B7:06:FA:9B --macaroonHex 0201036c6e6402bb01030a1063f62ef05f61ef36510951303f92bb381201301a160a0761646472657373120472656164120577726974651a130a04696e666f120472656164120577726974651a170a08696e766f69636573120472656164120577726974651a160a076d657373616765120472656164120577726974651a170a086f6666636861696e120472656164120577726974651a160a076f6e636861696e120472656164120577726974651a140a05706565727312047265616412057772697465034026200cdb471a6d41d1223de71920581cfa21a3e1c308f4e20e83068c1a200141e2bd
+```
 
 To view all the options run
 
 `dotnet lnd-metrics.dll --help` 
+
+#### macaroonHex - Extracing the admin.macaroon hex string
+
+On a Linux machine execute at the location where your macaroon files are, e.g. for testnet `/home/bitcoin/.lnd/data/chain/bitcoin/testnet`
+```
+xxd -p admin.macaroon | tr -d '\n' && echo " "
+```
+
+#### certThumbprintHex - Extracting the certificate thumbprint
+
+On a Linux machine execute at the location where you certificate files are, e.g. `/home/bitcoin/.lnd`
+```
+ openssl x509 -noout -fingerprint -sha256 -inform pem -in tls.cert
+```
 
 ### Docker
 

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using BTCPayServer.Lightning;
@@ -122,13 +119,25 @@ namespace Lightning.Metrics
 
         private LndClient CreateLndClient()
         {
-            var restSet = new LndRestSettings()
+            if (!LightningConnectionString.TryParse(
+                $"type=lnd-rest;server={_configuration.LndRestApiUri};macaroon={_configuration.MacaroonHex};certthumbprint={_configuration.CertThumbprintHex}",
+                false, out var connectionString))
             {
-                AllowInsecure = _configuration.LndRestApiAllowInsecure,
-                Uri = _configuration.LndRestApiUri
-            };
+                throw new ArgumentException("Unable to contruct the connection string");
+            }
 
-            return new LndClient(restSet, _configuration.Network == Network.Main ? NBitcoin.Network.Main : NBitcoin.Network.TestNet);
+            Logger.Debug("LndClient connection string created successfully");
+            /*
+             * LightningConnectionString.TryParse(
+                $"type=lnd-rest;server=https://lnd:lnd@127.0.0.1:53280/;macaroon={macaroon};certthumbprint={certthumbprint2}",
+                false, out var conn2);
+             */
+
+            return (LndClient)LightningClientFactory.CreateClient(
+                connectionString, 
+                _configuration.Network == Network.Main ? NBitcoin.Network.Main : NBitcoin.Network.TestNet);
+            
+
         }
     }
 

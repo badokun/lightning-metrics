@@ -85,6 +85,7 @@ restlisten=0.0.0.0:8080
 ```
 
 The `tlsextraip` is required if you plan on running the application on different machine to where the [Lightning Network Daemon](https://github.com/lightningnetwork/lnd) ️is running. 
+> When hosting on an Azure Linux VM I found using port `8080` failed for `restlisten`, so instead use `8081`
 
 ## Usage
 

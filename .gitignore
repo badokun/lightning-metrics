@@ -2,4 +2,4 @@
 obj
 bin
 *.user
-launchSettings.json
+launchSetting*.json

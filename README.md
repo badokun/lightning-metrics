@@ -85,7 +85,7 @@ restlisten=0.0.0.0:8080
 ```
 
 The `tlsextraip` is required if you plan on running the application on different machine to where the [Lightning Network Daemon](https://github.com/lightningnetwork/lnd) ️is running. 
-> When hosting on an Azure Linux VM I found using port `8080` failed for `restlisten`, so instead use `8081`
+> When adding the `tlsextraip` setting you may need to regenerate the tls.cert, tls.key and macaroon files. To test it's all working access the `/v1/getinfo` endpoint, e.g.  https://192.168.1.40:8080/v1/getinfo. You should see `{"error":"expected 1 macaroon, got 0","code":2}` as the response.
 
 ## Usage
 

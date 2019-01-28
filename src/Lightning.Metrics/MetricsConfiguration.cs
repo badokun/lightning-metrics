@@ -6,7 +6,7 @@ namespace Lightning.Metrics
     public enum Network
     {
         TestNet,
-        Main
+        MainNet
     }
 
     public class MetricsConfiguration

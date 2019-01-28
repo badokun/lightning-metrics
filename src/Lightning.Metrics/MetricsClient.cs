@@ -147,7 +147,7 @@ namespace Lightning.Metrics
 
             return (LndClient)LightningClientFactory.CreateClient(
                 connectionString, 
-                _configuration.Network == Network.Main ? NBitcoin.Network.Main : NBitcoin.Network.TestNet);
+                _configuration.Network == Network.MainNet ? NBitcoin.Network.Main : NBitcoin.Network.TestNet);
             
 
         }

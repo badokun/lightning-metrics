@@ -17,7 +17,7 @@ namespace Lightning.Metrics.App
         [Required]
         public Uri InfluxDbUri { get; }
 
-        [Option("--network", Description = "The bitcoin network. TestNet or Main")]
+        [Option("--network", Description = "The bitcoin network. TestNet or MainNet")]
         [Required]
         public Network Network { get; } = Network.TestNet;
 

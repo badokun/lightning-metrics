@@ -39,7 +39,7 @@ namespace Lightning.Metrics
             var networkInfoConverter = new LnrpcNetworkInfoMetric();
             var pendingOpenChannelConverter = new PendingChannelsResponsePendingOpenChannelMetric();
             var pendingForceClosedChannelConverter = new PendingChannelsResponseForceClosedChannelMetrics();
-            
+            var channelMetrics = new LnrpcChannelMetrics();
 
             while (true)
             {
@@ -49,10 +49,22 @@ namespace Lightning.Metrics
                     var channelBalance = await client.SwaggerClient.ChannelBalanceAsync();
                     var networkInfo = await client.SwaggerClient.GetNetworkInfoAsync();
                     var pendingChannels = await client.SwaggerClient.PendingChannelsAsync();
+                    var channelList = await client.SwaggerClient.ListChannelsAsync(true, false, private_only: false, public_only: false);
                     
                     metrics.Write($"{_configuration.MetricPrefix}_{walletResponseConverter.MetricName}", walletResponseConverter.GetFields(balance));
                     metrics.Write($"{_configuration.MetricPrefix}_{channelBalanceConverter.MetricName}", channelBalanceConverter.GetFields(channelBalance));
                     metrics.Write($"{_configuration.MetricPrefix}_{networkInfoConverter.MetricName}", networkInfoConverter.GetFields(networkInfo));
+
+                    if (channelList?.Channels != null)
+                    {
+                        foreach (var channel in channelList.Channels)
+                        {
+                            metrics.Write(
+                                $"{_configuration.MetricPrefix}_{channelMetrics.MetricName}",
+                                channelMetrics.GetFields(channel),
+                                channelMetrics.GetTags(channel));
+                        }
+                    }
 
                     if (pendingChannels.Pending_open_channels != null)
                     {

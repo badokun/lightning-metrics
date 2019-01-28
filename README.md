@@ -13,6 +13,18 @@ If you're looking to run this on a RaspiBolt [click here](RaspiBolt.md)
 
 ## Metrics
 
+* list_channels
+  * tags:
+    * host
+	* remote_pubkey
+	* channel_point
+  * fields:
+    * capacity
+	* local_balance
+	* remote_balance
+	* unsettled_balance
+	* total_satoshis_received
+	* total_satoshis_sent
 * pending_open_channels
   * tags:
     * host

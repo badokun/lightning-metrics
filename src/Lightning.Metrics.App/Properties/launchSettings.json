@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Lightning.Metrics.App": {
-      "commandName": "Project",
-      "commandLineArgs": "--influxDbUri http://192.168.1.40:8086 --network testnet --lndRestApiUri https://192.168.1.40:8080"
-    }
-  }
-}

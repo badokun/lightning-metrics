@@ -2,14 +2,9 @@
 
 ------
 
-### Beginner’s Guide to ️⚡Lightning️⚡ on a Raspberry Pi
-
-------
-
-## Bonus guide: Performance Monitoring
+## Performance Monitoring on a Raspberry Pi
 *Difficulty: intermediate*
 
-> Guide by [Badokun](https://github.com/badokun)  
 > Reference: Thanks to Pete Shima's [medium post](https://medium.com/@petey5000/monitoring-your-home-network-with-influxdb-on-raspberry-pi-with-docker-78a23559ffea) that helped greatly in setting this up.
 
 It's useful to have insights into RaspiBolt's performance metrics. This may help in debugging all sorts of potential problems, e.g. network latency, CPU performance, block propagation etc. 

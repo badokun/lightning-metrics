@@ -7,7 +7,7 @@ This application will query a Lightning Node ([LND Rest API](https://api.lightni
 used as a data source for Grafana Dashboards similar to the popular [Telegraf](https://github.com/influxdata/telegraf) agent. 
 
 The [RaspiBolt](https://github.com/Stadicus/guides/blob/master/raspibolt/README.md) project served as motivation for setting this up. 
-If you're looking to run this on a Raspberry Pi that was setup using the guide above [click here](docs/raspibolt_01.md)
+If you're looking to run this on a Raspberry Pi that was setup using the guide above [click here](docs/intro.md)
 
 ## Metrics
 

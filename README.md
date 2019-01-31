@@ -6,10 +6,9 @@
 This application will query a Lightning Node ([LND Rest API](https://api.lightning.community/rest/index.html)) and push all metrics into an InfluxDB which can be 
 used as a data source for Grafana Dashboards similar to the popular [Telegraf](https://github.com/influxdata/telegraf) agent. 
 
-The [RaspiBolt](https://github.com/badokun/guides/blob/master/raspibolt/README.md) project served as motivation for setting this up in particular
-[Bonus guide: Performance Monitoring](https://github.com/badokun/guides/blob/master/raspibolt/raspibolt_71_monitoring.md)
+The [RaspiBolt](https://github.com/Stadicus/guides/blob/master/raspibolt/README.md) project served as motivation for setting this up in particular
 
-If you're looking to run this on a RaspiBolt [click here](RaspiBolt.md)
+If you're looking to run this on a RaspiBolt [click here](docs/RaspiBolt.md)
 
 ## Metrics
 

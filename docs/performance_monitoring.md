@@ -2,18 +2,13 @@
 
 ------
 
-## Performance Monitoring on a Raspberry Pi
-*Difficulty: intermediate*
+# Performance Monitoring on a Raspberry
 
 > Reference: Thanks to Pete Shima's [medium post](https://medium.com/@petey5000/monitoring-your-home-network-with-influxdb-on-raspberry-pi-with-docker-78a23559ffea) that helped greatly in setting this up.
 
-It's useful to have insights into RaspiBolt's performance metrics. This may help in debugging all sorts of potential problems, e.g. network latency, CPU performance, block propagation etc. 
+## Overview
 
-Observing anomolies and doing performance tuning is greatly improved when you have these insights.
-
-### Overview
-
-There are a few required pieces to get this working. They are:
+There are a four required pieces to get this working: 
 - Docker
 - InfluxDB
 - Telegraf
@@ -39,14 +34,14 @@ There are a few required pieces to get this working. They are:
   $ sudo usermod -aG docker $USER
   ```
 
-* Restart your RaspiBolt for the changes to take effect and connect as user "admin".
+* Restart your Raspberry Pi for the changes to take effect and connect as user "admin".
   ```
   $ sudo shutdown -r now
   ```
 
-* Now test Docker by running the "Hello world" image. As it is not yet locally available, Docker automatically retrieves it from the [Docker Hub](https://hub.docker.com/), starts it up and executes the container. You might need to use "sudo" if you skipped the "usermod" step above.
+* Now test Docker by running the "Hello world" image. As it is not yet locally available, Docker automatically retrieves it from the [Docker Hub](https://hub.docker.com/), starts it up and executes the container. 
   ```
-    $ docker run hello-world
+  $ docker run hello-world
   ```
 
 ## InfluxDB
@@ -57,7 +52,7 @@ There are a few required pieces to get this working. They are:
   $ docker run -d --name=influxdb --net=host --restart always --volume=/var/influxdb:/data hypriot/rpi-influxdb 
   ```
 
-* Add a retention policy so we don't have to worry about the InfluxDB growing in size
+* Add a retention policy so we don't have to worry about the InfluxDB growing in size beyond 6 months.
   ```
   $ docker ps
   CONTAINER ID        IMAGE                       COMMAND                  CREATED             STATUS              PORTS               NAMES
@@ -110,7 +105,7 @@ There are a few required pieces to get this working. They are:
 
 * Write down a strong password to access Grafana administration features
   ```
-  [ E ] Grafana Admin password
+  [ A ] Grafana Admin password
   ```
 
 * Create persistent storage for your Grafana configurationso, keeping it also during future upgrades.
@@ -118,12 +113,12 @@ There are a few required pieces to get this working. They are:
   $ sudo docker volume create grafana-storage
   ```
 
-* Run the Grafana's docker image, replacing the `admin` password setting `PASSWORD_[E]` with your password. This will be used when logging into Grafana's UI. Copy / paste all lines at once into your terminal.
+* Run the Grafana's docker image, replacing the `admin` password setting `PASSWORD_[A]` with your password. This will be used when logging into Grafana's UI. Copy / paste all lines at once into your terminal.
 
   ```
   $ docker run \
     -d \
-    -e "GF_SECURITY_ADMIN_PASSWORD=PASSWORD_[E]" \
+    -e "GF_SECURITY_ADMIN_PASSWORD=PASSWORD_[A]" \
     --name grafana \
     -v grafana-storage:/var/lib/grafana \
     --restart always \
@@ -142,12 +137,13 @@ There are a few required pieces to get this working. They are:
   ```
 
 * To access the analytics webpage, we need to modify the firewall configuration to allow incomming connections to port 3000. 
-> Note the IP address range, yours may be 192.168.1.0/24 or different (see [base guide](raspibolt_20_pi.md#enabling-the-uncomplicated-firewall) for further information).
+> Note the IP address range, yours may be 192.168.1.0/24 or different.
+
   ```
   $ sudo ufw allow from 192.168.1.0/24 to any port 3000 comment 'allow grafana from local LAN'
   ```
 
-At this point the basic setup is complete and we can start to setup a Grafana Dashboard. Browse to `http://192.168.1.40:3000` in your browser (use the IP address of your RaspiBolt) and log in with `admin` and `PASSWORD_[E]`. 
+At this point the basic setup is complete and we can start to setup a Grafana Dashboard. Browse to `http://192.168.1.40:3000` in your browser (use the IP address of your RaspiBolt) and log in with `admin` and `PASSWORD_[A]`. 
 
 ![Grafana Home](images/71_grafana-home.jpg)
 
@@ -177,9 +173,5 @@ Click on "Add data source", then "InfluxDB". Enter `telegraf` into the Database 
 
 ![Grafana Dashboard Menu](images/71_grafana-manage-dashboard-success.jpg)
 
-> Once you've successfully completed this guide on performance monitoring, you can take things to the next level by following 
-[Running on RaspiBolt](https://github.com/badokun/lightning-metrics#running-on-raspibolt) section of the [lightning-metrics](https://github.com/badokun/lightning-metrics) project. This will give you additional metrics on the Lightning Network's status.
-
-------
-
-<< Back: [Bonus guides](raspibolt_60_bonus.md) 
+Once you've successfully completed this section, you can take things to the next level by following 
+[Lightning Metrics](lightning_metrics.md) instructions.

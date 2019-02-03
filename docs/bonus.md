@@ -175,13 +175,11 @@ Test that you're able to renew the certificate.
 sudo certbot renew --dry-run
 ```
 
-Reference material:
+### Security strengthening with fail2ban
 
-* <https://www.techcoil.com/blog/building-a-reverse-proxy-server-with-nginx-certbot-raspbian-stretch-lite-and-raspberry-pi-3/>
+Currently a work in progress, documenting the steps to follow soon
 
-* <https://www.digitalocean.com/community/tutorials/how-to-protect-an-nginx-server-with-fail2ban-on-ubuntu-14-04>
-
-regex for auth failures
+Example regex for auth failures
 
 ```yml
 [Definition]
@@ -189,13 +187,19 @@ failregex = ^<HOST>.*"(GET|POST).*" (404|444|403|400) .*$
 ignoreregex =
 ```
 
-how lightning works
-<https://dev.lightning.community/overview/#channel-lifecycle>
+Reference material:
+
+* <https://www.techcoil.com/blog/building-a-reverse-proxy-server-with-nginx-certbot-raspbian-stretch-lite-and-raspberry-pi-3/>
+
+* <https://www.digitalocean.com/community/tutorials/how-to-protect-an-nginx-server-with-fail2ban-on-ubuntu-14-04>
+
+Further useful reading material - <https://dev.lightning.community/overview/#channel-lifecycle>
 
 ------
 
 Donations
 
-If you feel like this has beenn useful and wish to donate, feel free to send a Satoshi or two to this address:
+If you feel like this has beenn useful and wish to donate, feel free to send a satoshi or two to this address, obviously use Lightning for near free instant transfers:
 
-👉 BTC: `bc1qx2hn38vc8f0fkn3hu8pmpuglg35ctqvx2rzzjs`
+* 👉 BTC: `bc1qx2hn38vc8f0fkn3hu8pmpuglg35ctqvx2rzzjs`
+* 👉 Lightning: <https://tippin.me/@rubberroad>

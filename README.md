@@ -188,6 +188,7 @@ Get some free testnet bitcoins at <https://lnroute.com/testnet-faucets/>
 
 Donations
 
-If you feel like this has beenn useful and wish to donate, feel free to send a Satoshi or two to this address:
+If you feel like this has beenn useful and wish to donate, feel free to send a satoshi or two to this address, obviously use Lightning for near free instant transfers:
 
-👉 BTC: `bc1qx2hn38vc8f0fkn3hu8pmpuglg35ctqvx2rzzjs`
+* 👉 BTC: `bc1qx2hn38vc8f0fkn3hu8pmpuglg35ctqvx2rzzjs`
+* 👉 Lightning: <https://tippin.me/@rubberroad>

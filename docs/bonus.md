@@ -7,13 +7,14 @@
 Having Grafana available on your local network is great, but it would be even better if you can monitor your Raspberry from any location.
 
 To do this you'll need to setup the following:
+
 * Get a free domain
 * Port forwarding 80 and 443 on your home router to your Raspberry
 * Install nginx (engine-x) as a reverse proxy. We do this so we can have all our requests run over https and so we have flexibility in adding more websites later, e.g. [Kibana](https://www.elastic.co/products/kibana), or [BTC RPC Explorer](https://github.com/janoside/btc-rpc-explorer)
-* Install certbot for managing your https certificate. 
+* Install certbot for managing your https certificate.
 * Restart Grafana docker image with added configuration
 
-### Getting a free domain
+## Getting a free domain
 
 There are multiple providers offering free domains, one of them is [freenom](https://my.freenom.com), but really any will do.
 
@@ -21,40 +22,40 @@ Set your domain to point to your home network's external IP address. This can be
 
 > For the remainder of this guide, replace `www.lndftw.com` with your domain name.
 
-### Router Port forwarding
+## Router Port forwarding
 
 You will need to route port 80 (http) and 443 (https) to your Raspberry. Refer to the  [ [Raspberry Pi](https://github.com/Stadicus/guides/blob/master/raspibolt/raspibolt_20_pi.md) ] section on how to do this
 
-### Install nginx as reserve proxy
+## Install nginx as reserve proxy
 
 When internet traffic over port 443 arrives at your Raspberry we need to ensure it's all encrypted. To do this we use nginx's reverse proxy feature.
 
-```
-$ sudo apt-get update
-$ sudo apt-get install nginx -y 
+```bash
+sudo apt-get update
+sudo apt-get install nginx -y
 ```
 
 Confirm it's running by running the command below
 
-```
-$ systemctl status nginx.service
+```bash
+systemctl status nginx.service
 ```
 
-### Prepare nginx for https certificate installation
+## Prepare nginx for https certificate installation
 
 Create a configuration file (replace the domain name with yours)
-```
+
+```bash
 sudo nano /etc/nginx/sites-enabled/www.lndftw.com.conf
 ```
 
 Paste the text and save
-```
+
+```conf
 server {
     listen 80;
     server_name  www.lndftw.com;
- 
     root /var/www/www.lndftw.com;
- 
     location ~ /.well-known {
         allow all;
     }
@@ -62,40 +63,41 @@ server {
 ```
 
 Create directory
-```
+
+```bash
 sudo mkdir /var/www/www.lndftw.com
 sudo chown www-data:www-data /var/www/www.lndftw.com
 ```
 
 Restart nginx
 
-```
+```bash
 sudo systemctl restart nginx.service
 ```
 
-### Install certbot for your https certificate
+## Install certbot for your https certificate
 
-```
-$ sudo sed -i "$ a\deb http://ftp.debian.org/debian stretch-backports main" /etc/apt/sources.list
-$ sudo apt-get update
-$ sudo apt-get install certbot -t stretch-backports -y --force-yes
+```bash
+sudo sed -i "$ a\deb http://ftp.debian.org/debian stretch-backports main" /etc/apt/sources.list
+sudo apt-get update
+sudo apt-get install certbot -t stretch-backports -y --force-yes
 ```
 
-```
+```bash
 sudo certbot certonly -a webroot --webroot-path=/var/www/www.lndftw.com -d www.lndftw.com
 ```
 
-### Update nginx configuration
- 
+## Update nginx configuration
+
 Now that you have Edit the configuration (replacing the domain name with yours)
 
-```
+```bash
 sudo nano /etc/nginx/sites-enabled/www.lndftw.com.conf
 ```
 
 Copy the contents below (replacing the domain name with yours and the `proxy_pass` value with the ip address of your Raspberry)
 
-```
+```conf
 # Redirect HTTP requests to HTTPS
 server {
     listen 80;
@@ -130,9 +132,10 @@ server {
     }
 }
 ```
+
 Restart nginx
 
-```
+```bash
 sudo systemctl restart nginx.service
 ```
 
@@ -142,14 +145,15 @@ Grafana needs to be reconfigured in order to work when using a reverse proxy.
 
 Stop and remove the current Grafana container (your settings will remain intact since it's persisted on another volume)
 
-```
-$ docker stop grafana
-$ docker rm grafana
+```bash
+docker stop grafana
+docker rm grafana
 ```
 
-> Update the domain to yours in the command below 
-```
-$ docker run \
+> Update the domain to yours in the command below
+
+```bash
+docker run \
     -d \
     -e "GF_SECURITY_ADMIN_PASSWORD=PASSWORD_[A]" \
     -e "GF_SERVER_DOMAIN=www.lndftw.com" \
@@ -162,31 +166,36 @@ $ docker run \
 ```
 
 ## Test renewal
-Test that you're able to renew the certificate. 
+
+Test that you're able to renew the certificate.
 
 > Your Raspberry needs to have port 80 and 443 open and routed at this stage
 
+```bash
+sudo certbot renew --dry-run
 ```
-$ sudo certbot renew --dry-run
-```
 
+Reference material:
 
-Reference material: 
+* <https://www.techcoil.com/blog/building-a-reverse-proxy-server-with-nginx-certbot-raspbian-stretch-lite-and-raspberry-pi-3/>
 
--e "GF_SERVER_ROOT_URL=https://raspibolt.badokun.tk/grafana" \
-
-* https://www.techcoil.com/blog/building-a-reverse-proxy-server-with-nginx-certbot-raspbian-stretch-lite-and-raspberry-pi-3/
-
-* https://www.digitalocean.com/community/tutorials/how-to-protect-an-nginx-server-with-fail2ban-on-ubuntu-14-04
-
+* <https://www.digitalocean.com/community/tutorials/how-to-protect-an-nginx-server-with-fail2ban-on-ubuntu-14-04>
 
 regex for auth failures
 
+```yml
 [Definition]
 failregex = ^<HOST>.*"(GET|POST).*" (404|444|403|400) .*$
 ignoreregex =
-
-
+```
 
 how lightning works
-https://dev.lightning.community/overview/#channel-lifecycle
+<https://dev.lightning.community/overview/#channel-lifecycle>
+
+------
+
+Donations
+
+If you feel like this has beenn useful and wish to donate, feel free to send a Satoshi or two to this address:
+
+👉 BTC: `bc1qx2hn38vc8f0fkn3hu8pmpuglg35ctqvx2rzzjs`

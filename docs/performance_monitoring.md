@@ -111,7 +111,7 @@ There are a four required pieces to get this working:
   ```bash
   cd /etc/telegraf/
   sudo mv telegraf.conf telegraf.conf.bak
-  sudo wget https://raw.githubusercontent.com/Stadicus/guides/master/raspibolt/resources/telegraf.conf
+  sudo wget https://raw.githubusercontent.com/badokun/guides/master/raspibolt/resources/telegraf.conf
   sudo systemctl restart telegraf
   ```
 

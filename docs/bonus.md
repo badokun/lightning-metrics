@@ -2,6 +2,14 @@
 
 ------
 
+# Continuous Backup
+
+Backing your RaspiBolt up may come in handy when the SD cards fails, LND/Bitcoin upgrade, or during a back OS upgrade.
+
+I prefer the disc image backup which helps you do a system restore
+- https://pimylifeup.com/backup-raspberry-pi/
+- logrotate http://www.drdobbs.com/logrotate-a-backup-solution/199101578
+
 # Accessing Grafana from the internet
 
 Having Grafana available on your local network is great, but it would be even better if you can monitor your Raspberry from any location.
@@ -25,6 +33,17 @@ Set your domain to point to your home network's external IP address. This can be
 ## Router Port forwarding
 
 You will need to route port 80 (http) and 443 (https) to your Raspberry. Refer to the  [ [Raspberry Pi](https://github.com/Stadicus/guides/blob/master/raspibolt/raspibolt_20_pi.md) ] section on how to do this
+
+## Update Firewall configuration
+
+In order to let http and https traffic through run the following:
+
+```bash
+sudo su
+ufw allow 80 comment 'allow http to all'
+ufw allow 443 comment 'allow https to all'
+exit
+```
 
 ## Install nginx as reserve proxy
 
@@ -185,6 +204,22 @@ Example regex for auth failures
 [Definition]
 failregex = ^<HOST>.*"(GET|POST).*" (404|444|403|400) .*$
 ignoreregex =
+```
+
+## Accessing Grafana inside LAN
+
+My network configuration didnt allow me to access grafana from inside the work so I had to run another instance on port 3001
+
+```bash
+docker run \
+  -d \
+  -e "GF_SECURITY_ADMIN_PASSWORD=PASSWORD_[A]" \
+  -e "GF_SERVER_HTTP_PORT=3001" \
+  --name grafana-local \
+  -v grafana-storage:/var/lib/grafana \
+  --restart always \
+  --net=host \
+  grafana/grafana:5.4.3
 ```
 
 Reference material:

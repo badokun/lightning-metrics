@@ -95,9 +95,9 @@ There are a four required pieces to get this working:
 
   ```bash
   cd /home/admin/download
-  wget https://dl.influxdata.com/telegraf/releases/telegraf_1.7.0-1_armhf.deb
-  sudo dpkg -i telegraf_1.7.0-1_armhf.deb
-  rm telegraf_1.7.0-1_armhf.deb
+  wget https://dl.influxdata.com/telegraf/releases/telegraf_1.9.4-1_armhf.deb
+  sudo dpkg -i telegraf_1.9.4-1_armhf.deb
+  rm telegraf_1.9.4-1_armhf.deb
   ```
 
 - Telegraf is now installed service. Confirm and check if the program has been started successfully. Press `Ctrl-C` to exit.

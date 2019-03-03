@@ -6,7 +6,7 @@
 
 Once you've completed the [Performance Monitoring](performance_monitoring.md) section you are now ready to add Lightning metrics.
 
-> Your Lightning wallet must be unlocked for metrics to be availble
+> Your Lightning wallet must be unlocked for metrics to be available
 
 ## Configuration
 
@@ -35,7 +35,7 @@ On a Linux machine execute at the location where you certificate files are, e.g.
  openssl x509 -noout -fingerprint -sha256 -inform pem -in tls.cert
 ```
 
-#### macaroonHex - Extracing the admin.macaroon hex string
+#### macaroonHex - Extracting the admin.macaroon hex string
 
 On a Linux machine execute at the location where your macaroon files are, e.g. for testnet `/home/bitcoin/.lnd/data/chain/bitcoin/testnet`
 
@@ -134,7 +134,7 @@ View the service's log file `sudo journalctl -f -u lnd`
 
 Donations
 
-If you feel like this has beenn useful and wish to donate, feel free to send a satoshi or two to this address, obviously use Lightning for near free instant transfers:
+If you feel like this has been useful and wish to donate, feel free to send a satoshi or two to this address, obviously use Lightning for near free instant transfers:
 
 * 👉 BTC: `bc1qx2hn38vc8f0fkn3hu8pmpuglg35ctqvx2rzzjs`
 * 👉 Lightning: <https://tippin.me/@rubberroad>

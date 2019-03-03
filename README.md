@@ -114,7 +114,7 @@ To view all the options run
 
 `dotnet lnd-metrics.dll --help`
 
-#### macaroonHex - Extracing the admin.macaroon hex string
+#### macaroonHex - Extracting the admin.macaroon hex string
 
 On a Linux machine execute at the location where your macaroon files are, e.g. for testnet `/home/bitcoin/.lnd/data/chain/bitcoin/testnet`
 

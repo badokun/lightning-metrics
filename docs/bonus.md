@@ -2,25 +2,17 @@
 
 ------
 
-# Continuous Backup
-
-Backing your RaspiBolt up may come in handy when the SD cards fails, LND/Bitcoin upgrade, or during a back OS upgrade.
-
-I prefer the disc image backup which helps you do a system restore
-- https://pimylifeup.com/backup-raspberry-pi/
-- logrotate http://www.drdobbs.com/logrotate-a-backup-solution/199101578
-
 # Accessing Grafana from the internet
 
 Having Grafana available on your local network is great, but it would be even better if you can monitor your Raspberry from any location.
 
 To do this you'll need to setup the following:
 
-* Get a free domain
-* Port forwarding 80 and 443 on your home router to your Raspberry
-* Install nginx (engine-x) as a reverse proxy. We do this so we can have all our requests run over https and so we have flexibility in adding more websites later, e.g. [Kibana](https://www.elastic.co/products/kibana), or [BTC RPC Explorer](https://github.com/janoside/btc-rpc-explorer)
-* Install certbot for managing your https certificate.
-* Restart Grafana docker image with added configuration
+- Get a free domain
+- Port forwarding 80 and 443 on your home router to your Raspberry
+- Install nginx (engine-x) as a reverse proxy. We do this so we can have all our requests run over https and so we have flexibility in adding more websites later, e.g. [Kibana](https://www.elastic.co/products/kibana), or [BTC RPC Explorer](https://github.com/janoside/btc-rpc-explorer)
+- Install certbot for managing your https certificate.
+- Restart Grafana docker image with added configuration
 
 ## Getting a free domain
 
@@ -208,7 +200,7 @@ ignoreregex =
 
 ## Accessing Grafana inside LAN
 
-My network configuration didnt allow me to access grafana from inside the work so I had to run another instance on port 3001
+My network configuration didn't allow me to access grafana from inside the work so I had to run another instance on port 3001
 
 ```bash
 docker run \
@@ -222,6 +214,14 @@ docker run \
   grafana/grafana:5.4.3
 ```
 
+# Continuous Backup
+
+Backing your RaspiBolt up may come in handy when the SD cards fails, LND/Bitcoin upgrade, or during a back OS upgrade.
+
+I prefer the disc image backup which helps you do a system restore
+- https://pimylifeup.com/backup-raspberry-pi/
+- logrotate http://www.drdobbs.com/logrotate-a-backup-solution/199101578
+
 Reference material:
 
 * <https://www.techcoil.com/blog/building-a-reverse-proxy-server-with-nginx-certbot-raspbian-stretch-lite-and-raspberry-pi-3/>
@@ -234,7 +234,7 @@ Further useful reading material - <https://dev.lightning.community/overview/#cha
 
 Donations
 
-If you feel like this has beenn useful and wish to donate, feel free to send a satoshi or two to this address, obviously use Lightning for near free instant transfers:
+If you feel like this has been useful and wish to donate, feel free to send a satoshi or two to this address, obviously use Lightning for near free instant transfers:
 
 * 👉 BTC: `bc1qx2hn38vc8f0fkn3hu8pmpuglg35ctqvx2rzzjs`
 * 👉 Lightning: <https://tippin.me/@rubberroad>

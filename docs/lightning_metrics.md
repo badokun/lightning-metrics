@@ -104,7 +104,7 @@ docker run --restart always -d --net host --name lnd-metrics-arm32 \
         --network testnet \
         --lndRestApiUri https://127.0.0.1:8080 \
         --certThumbprintHex BC:C5... \
-        --macaroonHex 402bb... \
+        --macaroonHex 402bb...
 ```
 
 ## Grafana Dashboard

@@ -86,7 +86,7 @@ When you've confirmed connectivity to both the LND REST API and InfluxDb you can
         --network testnet \
         --lndRestApiUri https://127.0.0.1:8080 \
         --certThumbprintHex BC:C5... \
-        --macaroonHex 402bb... \
+        --macaroonHex 402bb...
 ```
 
 ### Upgrading

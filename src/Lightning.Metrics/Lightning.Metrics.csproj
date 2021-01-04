@@ -1,17 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="TextFile1.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="BTCPayServer.Lightning.All" Version="1.1.0.4" />
-    <PackageReference Include="BTCPayServer.Lightning.LND" Version="1.1.0.5" />
-    <PackageReference Include="InfluxDB.Collector" Version="1.1.0" />
+    <PackageReference Include="BTCPayServer.Lightning.All" Version="1.2.6" />
+    <PackageReference Include="BTCPayServer.Lightning.LND" Version="1.2.3" />
+    <PackageReference Include="InfluxDB.Collector" Version="1.1.1" />
   </ItemGroup>
 
 </Project>

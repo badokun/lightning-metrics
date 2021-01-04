@@ -45,12 +45,12 @@ namespace Lightning.Metrics
             {
                 try
                 {
-                    var balance = await client.SwaggerClient.WalletBalanceAsync();
-                    var channelBalance = await client.SwaggerClient.ChannelBalanceAsync();
-                    var networkInfo = await client.SwaggerClient.GetNetworkInfoAsync();
-                    var pendingChannels = await client.SwaggerClient.PendingChannelsAsync();
-                    var channelList = await client.SwaggerClient.ListChannelsAsync(true, false, private_only: false, public_only: false);
-                    
+                    var balance = await client.SwaggerClient.WalletBalanceAsync().ConfigureAwait(false);
+                    var channelBalance = await client.SwaggerClient.ChannelBalanceAsync().ConfigureAwait(false);
+                    var networkInfo = await client.SwaggerClient.GetNetworkInfoAsync().ConfigureAwait(false);
+                    var pendingChannels = await client.SwaggerClient.PendingChannelsAsync().ConfigureAwait(false);
+                    var channelList = await client.SwaggerClient.ListChannelsAsync(true, false, private_only: false, public_only: false).ConfigureAwait(false);
+
                     metrics.Write($"{_configuration.MetricPrefix}_{walletResponseConverter.MetricName}", walletResponseConverter.GetFields(balance));
                     metrics.Write($"{_configuration.MetricPrefix}_{channelBalanceConverter.MetricName}", channelBalanceConverter.GetFields(channelBalance));
                     metrics.Write($"{_configuration.MetricPrefix}_{networkInfoConverter.MetricName}", networkInfoConverter.GetFields(networkInfo));

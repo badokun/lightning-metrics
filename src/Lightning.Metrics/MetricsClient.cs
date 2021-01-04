@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using BTCPayServer.Lightning;
 using BTCPayServer.Lightning.LND;
@@ -11,38 +10,41 @@ namespace Lightning.Metrics
 {
     public class MetricsClient
     {
-        private readonly MetricsConfiguration _configuration;
+        private readonly MetricsConfiguration configuration;
 
         public MetricsClient(MetricsConfiguration configuration)
         {
-            _configuration = configuration;
+            this.configuration = configuration;
         }
 
         public async Task Start()
         {
             Logger.Debug($"Application starting");
-            Logger.Debug($"LND Api  {_configuration.LndRestApiUri}");
-            Logger.Debug($"InfluxDb {_configuration.InfluxDbUri}");
-            Logger.Debug($"Interval {_configuration.IntervalSeconds} seconds");
+            Logger.Debug($"LND Api  {configuration.LndRestApiUri}");
+            Logger.Debug($"InfluxDb {configuration.InfluxDbUri}");
+            Logger.Debug($"Interval {configuration.IntervalSeconds} seconds");
             Logger.Debug($"Colleting metrics commencing");
 
             var client = CreateLndClient();
-            
+
             var metrics = new CollectorConfiguration()
                 .Tag.With("host", Environment.MachineName)
-                .Batch.AtInterval(TimeSpan.FromSeconds(_configuration.IntervalSeconds))
-                .WriteTo.InfluxDB(_configuration.InfluxDbUri, _configuration.InfluxDbName)
+                .Batch.AtInterval(TimeSpan.FromSeconds(configuration.IntervalSeconds))
+                .WriteTo.InfluxDB(configuration.InfluxDbUri, configuration.InfluxDbName)
                 .CreateCollector();
 
-            var walletResponseConverter = new LnrpcWalletBalanceResponseMetric();
-            var channelBalanceConverter = new LnrpcChannelBalanceResponseMetric();
-            var networkInfoConverter = new LnrpcNetworkInfoMetric();
-            var pendingOpenChannelConverter = new PendingChannelsResponsePendingOpenChannelMetric();
-            var pendingForceClosedChannelConverter = new PendingChannelsResponseForceClosedChannelMetrics();
-            var channelMetrics = new LnrpcChannelMetrics();
+            var nodeAliasCache = new NodeAliasCache(client);
+            var walletResponseConverter = new LnrpcWalletBalanceResponseMetric(configuration, metrics);
+            var channelBalanceConverter = new LnrpcChannelBalanceResponseMetric(configuration, metrics);
+            var networkInfoConverter = new LnrpcNetworkInfoMetric(configuration, metrics);
+            var pendingOpenChannelConverter = new PendingChannelsResponsePendingOpenChannelMetric(configuration, metrics);
+            var pendingForceClosedChannelConverter = new PendingChannelsResponseForceClosedChannelMetrics(configuration, metrics);
+            var channelMetrics = new LnrpcChannelMetrics(configuration, metrics, nodeAliasCache);
 
             while (true)
             {
+                var waitingTask = Task.Delay(TimeSpan.FromSeconds(configuration.IntervalSeconds));
+
                 try
                 {
                     var balance = await client.SwaggerClient.WalletBalanceAsync().ConfigureAwait(false);
@@ -51,60 +53,24 @@ namespace Lightning.Metrics
                     var pendingChannels = await client.SwaggerClient.PendingChannelsAsync().ConfigureAwait(false);
                     var channelList = await client.SwaggerClient.ListChannelsAsync(true, false, private_only: false, public_only: false).ConfigureAwait(false);
 
-                    metrics.Write($"{_configuration.MetricPrefix}_{walletResponseConverter.MetricName}", walletResponseConverter.GetFields(balance));
-                    metrics.Write($"{_configuration.MetricPrefix}_{channelBalanceConverter.MetricName}", channelBalanceConverter.GetFields(channelBalance));
-                    metrics.Write($"{_configuration.MetricPrefix}_{networkInfoConverter.MetricName}", networkInfoConverter.GetFields(networkInfo));
+                    await nodeAliasCache.Refresh(channelList);
 
-                    if (channelList?.Channels != null)
-                    {
-                        foreach (var channel in channelList.Channels)
-                        {
-                            metrics.Write(
-                                $"{_configuration.MetricPrefix}_{channelMetrics.MetricName}",
-                                channelMetrics.GetFields(channel),
-                                channelMetrics.GetTags(channel));
-                        }
-                    }
-
-                    if (pendingChannels.Pending_open_channels != null)
-                    {
-                        foreach (var pendingOpen in pendingChannels.Pending_open_channels)
-                        {
-                            metrics.Write(
-                                $"{_configuration.MetricPrefix}_{pendingOpenChannelConverter.MetricName}",
-                                pendingOpenChannelConverter.GetFields(pendingOpen),
-                                pendingOpenChannelConverter.GetTags(pendingOpen));
-                        }
-                    }
-
-                    if (pendingChannels.Pending_force_closing_channels != null)
-                    {
-                        foreach (var pendingForceCLose in pendingChannels.Pending_force_closing_channels)
-                        {
-
-                            metrics.Write(
-                                $"{_configuration.MetricPrefix}_{pendingForceClosedChannelConverter.MetricName}",
-                                pendingForceClosedChannelConverter.GetFields(pendingForceCLose),
-                                pendingForceClosedChannelConverter.GetTags(pendingForceCLose));
-
-                            var lnrpcPendingHtlc = new LnrpcPendingHtlcMetrics(pendingForceCLose);
-                            foreach (var pendingHtlcs in pendingForceCLose.Pending_htlcs)
-                            {
-                                metrics.Write(
-                                    $"{_configuration.MetricPrefix}_{lnrpcPendingHtlc.MetricName}",
-                                    lnrpcPendingHtlc.GetFields(pendingHtlcs),
-                                    lnrpcPendingHtlc.GetTags(pendingHtlcs));
-                            }
-                        }
-                    }
+                    walletResponseConverter.WriteMetrics(balance);
+                    channelBalanceConverter.WriteMetrics(channelBalance);
+                    networkInfoConverter.WriteMetrics(networkInfo);
+                    channelMetrics.WriteMetrics(channelList);
+                    pendingOpenChannelConverter.WriteMetrics(pendingChannels);
+                    pendingForceClosedChannelConverter.WriteMetrics(pendingChannels);
                 }
                 catch (Exception e)
                 {
                     Logger.Error(e.Message);
                     client = CreateLndClient();
                 }
-           
-                Thread.Sleep(TimeSpan.FromSeconds(_configuration.IntervalSeconds));
+                finally
+                {
+                    await waitingTask.ConfigureAwait(false);
+                }
             }
         }
 
@@ -112,11 +78,11 @@ namespace Lightning.Metrics
         {
             var metrics = new CollectorConfiguration()
                 .Tag.With("host", Environment.MachineName)
-                .Batch.AtInterval(TimeSpan.FromSeconds(_configuration.IntervalSeconds))
-                .WriteTo.InfluxDB(_configuration.InfluxDbUri, _configuration.InfluxDbName)
+                .Batch.AtInterval(TimeSpan.FromSeconds(configuration.IntervalSeconds))
+                .WriteTo.InfluxDB(configuration.InfluxDbUri, configuration.InfluxDbName)
                 .CreateCollector();
-            
-            metrics.Write($"{_configuration.MetricPrefix}_influxDbTest", new Dictionary<string, object> { {"test", "1" } });
+
+            metrics.Write($"{configuration.MetricPrefix}_influxDbTest", new Dictionary<string, object> { { "test", "1" } });
 
             Logger.Debug("InfluxDb write operation completed successfully");
         }
@@ -124,7 +90,7 @@ namespace Lightning.Metrics
         public void TestLndApi()
         {
             var client = CreateLndClient();
-            var balanceTest =  client.SwaggerClient.WalletBalanceAsync();
+            var balanceTest = client.SwaggerClient.WalletBalanceAsync();
             balanceTest.Wait();
             Logger.Debug("LndApi test operation completed successfully");
         }
@@ -132,7 +98,7 @@ namespace Lightning.Metrics
         private LndClient CreateLndClient()
         {
             if (!LightningConnectionString.TryParse(
-                $"type=lnd-rest;server={_configuration.LndRestApiUri};macaroon={_configuration.MacaroonHex};certthumbprint={_configuration.CertThumbprintHex}",
+                $"type=lnd-rest;server={configuration.LndRestApiUri};macaroon={configuration.MacaroonHex};certthumbprint={configuration.CertThumbprintHex}",
                 false, out var connectionString))
             {
                 throw new ArgumentException("Unable to contruct the connection string");
@@ -146,12 +112,8 @@ namespace Lightning.Metrics
              */
 
             return (LndClient)LightningClientFactory.CreateClient(
-                connectionString, 
-                _configuration.Network == Network.MainNet ? NBitcoin.Network.Main : NBitcoin.Network.TestNet);
-            
-
+                connectionString,
+                configuration.Network == Network.MainNet ? NBitcoin.Network.Main : NBitcoin.Network.TestNet);
         }
     }
-
-
 }

@@ -1,18 +1,31 @@
 ﻿using System.Collections.Generic;
 using BTCPayServer.Lightning.LND;
+using InfluxDB.Collector;
 
 namespace Lightning.Metrics.MetricConverters
 {
-    public class LnrpcPendingHtlcMetrics : IMetricConverterWithTags<LnrpcPendingHTLC>
+    public class LnrpcPendingHtlcMetrics
     {
-        private readonly PendingChannelsResponseForceClosedChannel _parent;
-        public string MetricName => "pending_htlcs";
+        private const string MetricName = "pending_htlcs";
 
-        public LnrpcPendingHtlcMetrics(PendingChannelsResponseForceClosedChannel parent)
+        private readonly MetricsConfiguration configuration;
+        private readonly MetricsCollector metrics;
+
+        public LnrpcPendingHtlcMetrics(MetricsConfiguration configuration, MetricsCollector metrics)
         {
-            _parent = parent;
+            this.configuration = configuration;
+            this.metrics = metrics;
         }
-        public Dictionary<string, object> GetFields(LnrpcPendingHTLC metric)
+
+        public void WriteMetrics(PendingChannelsResponseForceClosedChannel parent)
+        {
+            foreach (var pendingHtlcs in parent.Pending_htlcs)
+            {
+                metrics.Write($"{configuration.MetricPrefix}_{MetricName}", this.GetFields(pendingHtlcs), this.GetTags(parent));
+            }
+        }
+
+        private Dictionary<string, object> GetFields(LnrpcPendingHTLC metric)
         {
             return new Dictionary<string, object>
             {
@@ -24,11 +37,11 @@ namespace Lightning.Metrics.MetricConverters
             };
         }
 
-        public Dictionary<string, string> GetTags(LnrpcPendingHTLC metric)
+        private Dictionary<string, string> GetTags(PendingChannelsResponseForceClosedChannel parent)
         {
             return new Dictionary<string, string>
             {
-                { nameof(_parent.Closing_txid).ToLowerInvariant(), _parent.Closing_txid.Left(Extensions.TagSize) }
+                { nameof(parent.Closing_txid).ToLowerInvariant(), parent.Closing_txid.Left(Extensions.TagSize) }
             };
         }
     }

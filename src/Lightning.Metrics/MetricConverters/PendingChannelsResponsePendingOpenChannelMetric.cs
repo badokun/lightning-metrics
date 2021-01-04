@@ -1,15 +1,32 @@
 ﻿using System.Collections.Generic;
 using BTCPayServer.Lightning.LND;
+using InfluxDB.Collector;
 
 namespace Lightning.Metrics.MetricConverters
 {
-    public class PendingChannelsResponsePendingOpenChannelMetric : IMetricConverterWithTags<PendingChannelsResponsePendingOpenChannel>
+    public class PendingChannelsResponsePendingOpenChannelMetric
     {
-        
-        public string MetricName => "pending_open_channels";
+        private readonly MetricsConfiguration configuration;
+        private readonly MetricsCollector metrics;
 
+        public PendingChannelsResponsePendingOpenChannelMetric(MetricsConfiguration configuration, MetricsCollector metrics)
+        {
+            this.configuration = configuration;
+            this.metrics = metrics;
+        }
 
-        public Dictionary<string, object> GetFields(PendingChannelsResponsePendingOpenChannel pendingOpenChannel)
+        public void WriteMetrics(LnrpcPendingChannelsResponse pendingChannelsResponse)
+        {
+            if (pendingChannelsResponse.Pending_open_channels != null)
+            {
+                foreach (var pendingOpen in pendingChannelsResponse.Pending_open_channels)
+                {
+                    metrics.Write($"{configuration.MetricPrefix}_pending_open_channels", GetFields(pendingOpen), GetTags(pendingOpen));
+                }
+            }
+        }
+
+        private static Dictionary<string, object> GetFields(PendingChannelsResponsePendingOpenChannel pendingOpenChannel)
         {
             return new Dictionary<string, object>
             {
@@ -22,7 +39,7 @@ namespace Lightning.Metrics.MetricConverters
             };
         }
 
-        public Dictionary<string, string> GetTags(PendingChannelsResponsePendingOpenChannel metric)
+        private static Dictionary<string, string> GetTags(PendingChannelsResponsePendingOpenChannel metric)
         {
             return new Dictionary<string, string>
             {

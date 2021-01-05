@@ -33,7 +33,7 @@ namespace Lightning.Metrics.MetricConverters
         {
             return new Dictionary<string, object>
             {
-                { nameof(metric.Active).ToLowerInvariant(), metric.Active ?? false },
+                { nameof(metric.Active).ToLowerInvariant(), metric.Active.ToInt() },
                 { nameof(metric.Capacity).ToLowerInvariant(), metric.Capacity.ToLong() },
                 { nameof(metric.Local_balance).ToLowerInvariant(), metric.Local_balance.ToLong() },
                 { nameof(metric.Remote_balance).ToLowerInvariant(), metric.Remote_balance.ToLong() },

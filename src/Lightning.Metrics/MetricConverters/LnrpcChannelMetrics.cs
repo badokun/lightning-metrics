@@ -1,12 +1,34 @@
 using System.Collections.Generic;
 using BTCPayServer.Lightning.LND;
+using InfluxDB.Collector;
 
 namespace Lightning.Metrics.MetricConverters
 {
-    public class LnrpcChannelMetrics: IMetricConverterWithTags<LnrpcChannel>
+    public class LnrpcChannelMetrics
     {
-        public string MetricName => "list_channels";
-        public Dictionary<string, object> GetFields(LnrpcChannel metric)
+        private readonly MetricsConfiguration configuration;
+        private readonly MetricsCollector metrics;
+        private readonly NodeAliasCache nodeAliasCache;
+
+        public LnrpcChannelMetrics(MetricsConfiguration configuration, MetricsCollector metrics, NodeAliasCache nodeAliasCache)
+        {
+            this.configuration = configuration;
+            this.metrics = metrics;
+            this.nodeAliasCache = nodeAliasCache;
+        }
+
+        public void WriteMetrics(LnrpcListChannelsResponse listChannelsResponse)
+        {
+            if (listChannelsResponse?.Channels != null)
+            {
+                foreach (var channel in listChannelsResponse.Channels)
+                {
+                    metrics.Write($"{configuration.MetricPrefix}_list_channels", GetFields(channel), this.GetTags(channel));
+                }
+            }
+        }
+
+        private static Dictionary<string, object> GetFields(LnrpcChannel metric)
         {
             return new Dictionary<string, object>
             {
@@ -20,12 +42,11 @@ namespace Lightning.Metrics.MetricConverters
             };
         }
 
-        public Dictionary<string, string> GetTags(LnrpcChannel metric)
+        private Dictionary<string, string> GetTags(LnrpcChannel metric)
         {
             return new Dictionary<string, string>
             {
-                { nameof(metric.Remote_pubkey).ToLowerInvariant(), metric.Remote_pubkey.Left(Extensions.TagSize) },
-                { nameof(metric.Channel_point).ToLowerInvariant(), metric.Channel_point.Left(Extensions.TagSize) }
+                { "remote_alias", this.nodeAliasCache.GetNodeAlias(metric.Remote_pubkey) }
             };
         }
     }

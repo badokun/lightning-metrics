@@ -1,12 +1,34 @@
 ﻿using System.Collections.Generic;
 using BTCPayServer.Lightning.LND;
+using InfluxDB.Collector;
 
 namespace Lightning.Metrics.MetricConverters
 {
-    public class PendingChannelsResponseForceClosedChannelMetrics : IMetricConverterWithTags<PendingChannelsResponseForceClosedChannel>
+    public class PendingChannelsResponseForceClosedChannelMetrics
     {
-        public string MetricName => "forced_closed_channels";
-        public Dictionary<string, object> GetFields(PendingChannelsResponseForceClosedChannel metric)
+        private readonly MetricsConfiguration configuration;
+        private readonly MetricsCollector metrics;
+
+        public PendingChannelsResponseForceClosedChannelMetrics(MetricsConfiguration configuration, MetricsCollector metrics)
+        {
+            this.configuration = configuration;
+            this.metrics = metrics;
+        }
+
+        public void WriteMetrics(LnrpcPendingChannelsResponse pendingChannelsResponse)
+        {
+            if (pendingChannelsResponse.Pending_force_closing_channels != null)
+            {
+                foreach (var pendingForceCLose in pendingChannelsResponse.Pending_force_closing_channels)
+                {
+                    metrics.Write($"{configuration.MetricPrefix}_forced_closed_channels", GetFields(pendingForceCLose), GetTags(pendingForceCLose));
+
+                    new LnrpcPendingHtlcMetrics(this.configuration, this.metrics).WriteMetrics(pendingForceCLose);
+                }
+            }
+        }
+
+        private static Dictionary<string, object> GetFields(PendingChannelsResponseForceClosedChannel metric)
         {
             return new Dictionary<string, object>
             {
@@ -21,7 +43,7 @@ namespace Lightning.Metrics.MetricConverters
             };
         }
 
-        public Dictionary<string, string> GetTags(PendingChannelsResponseForceClosedChannel metric)
+        private static Dictionary<string, string> GetTags(PendingChannelsResponseForceClosedChannel metric)
         {
             return new Dictionary<string, string>
             {

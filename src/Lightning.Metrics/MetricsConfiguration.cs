@@ -18,7 +18,7 @@ namespace Lightning.Metrics
 
         public int IntervalSeconds { get; set; }
 
-        public Uri LndRestApiUri { get; set; } 
+        public Uri LndRestApiUri { get; set; }
         public string MetricPrefix { get; set; }
         public string MacaroonHex { get; set; }
         public string CertThumbprintHex { get; set; }

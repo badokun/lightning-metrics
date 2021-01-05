@@ -83,7 +83,7 @@ If you're looking to run this on a Raspberry Pi that was setup using the guide a
 
 ## Configuration
 
-The application is compiled as `lnd-metrics.dll` and uses the [LND Rest API](https://api.lightning.community/rest/index.html) which
+The application is compiled as `lnd-metrics.exe` and uses the [LND Rest API](https://api.lightning.community/rest/index.html) which
 requires the following configuration in the `lnd.conf` file.
 
 ```bash
@@ -102,7 +102,7 @@ The `tlsextraip` is required if you plan on running the application on different
 ### Command line
 
 ```bash
-dotnet lnd-metrics.dll
+lnd-metrics.exe
   --influxDbUri http://192.168.1.40:8086
   --network testnet
   --lndRestApiUri https://192.168.1.40:8080
@@ -112,7 +112,7 @@ dotnet lnd-metrics.dll
 
 To view all the options run
 
-`dotnet lnd-metrics.dll --help`
+`lnd-metrics.exe --help`
 
 #### macaroonHex - Extracting the admin.macaroon hex string
 

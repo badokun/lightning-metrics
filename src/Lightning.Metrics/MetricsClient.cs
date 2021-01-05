@@ -17,9 +17,9 @@ namespace Lightning.Metrics
             this.configuration = configuration;
         }
 
-        public async Task Start()
+        public async Task Start(string version)
         {
-            Logger.Debug($"Application starting");
+            Logger.Debug($"Application v.{version} starting");
             Logger.Debug($"LND Api  {configuration.LndRestApiUri}");
             Logger.Debug($"InfluxDb {configuration.InfluxDbUri}");
             Logger.Debug($"Interval {configuration.IntervalSeconds} seconds");

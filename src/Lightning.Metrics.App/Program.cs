@@ -1,6 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
+using System.Reflection;
 using McMaster.Extensions.CommandLineUtils;
 using Newtonsoft.Json;
 // ReSharper disable UnassignedGetOnlyAutoProperty
@@ -87,7 +87,8 @@ namespace Lightning.Metrics.App
                 }
                 else
                 {
-                    client.Start().Wait();
+                    var version = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+                    client.Start(version).Wait();
                 }
             }
             catch (Exception e)

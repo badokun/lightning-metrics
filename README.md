@@ -12,20 +12,23 @@ If you're looking to run this on a Raspberry Pi that was setup using the guide a
 * list_channels
   * tags:
     * host
-    * remote_pubkey
-    * channel_point
+    * remote_alias
   * fields:
+    * active
     * capacity
     * local_balance
     * remote_balance
     * unsettled_balance
     * total_satoshis_received
     * total_satoshis_sent
+	* commit_fee
+	* commit_weight
+	* fee_per_kw
+	* num_updates	
 * pending_open_channels
   * tags:
     * host
-    * remote_node_pub
-    * channel_point
+    * remote_alias
   * fields:
     * capacity
     * local_balance

@@ -8,11 +8,13 @@ namespace Lightning.Metrics.MetricConverters
     {
         private readonly MetricsConfiguration configuration;
         private readonly MetricsCollector metrics;
+        private readonly NodeAliasCache nodeAliasCache;
 
-        public PendingChannelsResponsePendingOpenChannelMetric(MetricsConfiguration configuration, MetricsCollector metrics)
+        public PendingChannelsResponsePendingOpenChannelMetric(MetricsConfiguration configuration, MetricsCollector metrics, NodeAliasCache nodeAliasCache)
         {
             this.configuration = configuration;
             this.metrics = metrics;
+            this.nodeAliasCache = nodeAliasCache;
         }
 
         public void WriteMetrics(LnrpcPendingChannelsResponse pendingChannelsResponse)
@@ -21,7 +23,8 @@ namespace Lightning.Metrics.MetricConverters
             {
                 foreach (var pendingOpen in pendingChannelsResponse.Pending_open_channels)
                 {
-                    metrics.Write($"{configuration.MetricPrefix}_pending_open_channels", GetFields(pendingOpen), GetTags(pendingOpen));
+                    var nodeAlias = this.nodeAliasCache.GetNodeAlias(pendingOpen.Channel.Remote_node_pub);
+                    metrics.Write($"{configuration.MetricPrefix}_pending_open_channels", GetFields(pendingOpen), GetTags(nodeAlias));
                 }
             }
         }
@@ -39,12 +42,11 @@ namespace Lightning.Metrics.MetricConverters
             };
         }
 
-        private static Dictionary<string, string> GetTags(PendingChannelsResponsePendingOpenChannel metric)
+        private static Dictionary<string, string> GetTags(string nodeAlias)
         {
             return new Dictionary<string, string>
             {
-                { nameof(metric.Channel.Remote_node_pub).ToLowerInvariant(), metric.Channel.Remote_node_pub.Left(Extensions.TagSize) },
-                { nameof(metric.Channel.Channel_point).ToLowerInvariant(), metric.Channel.Channel_point.Left(Extensions.TagSize) }
+                { "remote_alias", nodeAlias }
             };
         }
     }

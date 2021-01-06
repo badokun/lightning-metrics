@@ -17,9 +17,9 @@ namespace Lightning.Metrics
             this.configuration = configuration;
         }
 
-        public async Task Start()
+        public async Task Start(string version)
         {
-            Logger.Debug($"Application starting");
+            Logger.Debug($"Application v.{version} starting");
             Logger.Debug($"LND Api  {configuration.LndRestApiUri}");
             Logger.Debug($"InfluxDb {configuration.InfluxDbUri}");
             Logger.Debug($"Interval {configuration.IntervalSeconds} seconds");
@@ -37,7 +37,7 @@ namespace Lightning.Metrics
             var walletResponseConverter = new LnrpcWalletBalanceResponseMetric(configuration, metrics);
             var channelBalanceConverter = new LnrpcChannelBalanceResponseMetric(configuration, metrics);
             var networkInfoConverter = new LnrpcNetworkInfoMetric(configuration, metrics);
-            var pendingOpenChannelConverter = new PendingChannelsResponsePendingOpenChannelMetric(configuration, metrics);
+            var pendingOpenChannelConverter = new PendingChannelsResponsePendingOpenChannelMetric(configuration, metrics, nodeAliasCache);
             var pendingForceClosedChannelConverter = new PendingChannelsResponseForceClosedChannelMetrics(configuration, metrics);
             var channelMetrics = new LnrpcChannelMetrics(configuration, metrics, nodeAliasCache);
 
@@ -51,9 +51,9 @@ namespace Lightning.Metrics
                     var channelBalance = await client.SwaggerClient.ChannelBalanceAsync().ConfigureAwait(false);
                     var networkInfo = await client.SwaggerClient.GetNetworkInfoAsync().ConfigureAwait(false);
                     var pendingChannels = await client.SwaggerClient.PendingChannelsAsync().ConfigureAwait(false);
-                    var channelList = await client.SwaggerClient.ListChannelsAsync(true, false, private_only: false, public_only: false).ConfigureAwait(false);
+                    var channelList = await client.SwaggerClient.ListChannelsAsync(null, null, null, null).ConfigureAwait(false);
 
-                    await nodeAliasCache.Refresh(channelList);
+                    await nodeAliasCache.RefreshOnlyIfNecessary(channelList, pendingChannels).ConfigureAwait(false);
 
                     walletResponseConverter.WriteMetrics(balance);
                     channelBalanceConverter.WriteMetrics(channelBalance);

@@ -11,6 +11,16 @@ namespace Lightning.Metrics.MetricConverters
             return value != null ? long.Parse(value) : 0;
         }
 
+        public static int ToInt(this bool? value)
+        {
+            if (value.HasValue)
+            {
+                return Convert.ToInt32(value.Value);
+            }
+
+            return 0;
+        }
+
         public static string Left(this string value, int maxLength)
         {
             if (string.IsNullOrEmpty(value)) return value;

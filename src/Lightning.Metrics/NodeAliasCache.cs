@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BTCPayServer.Lightning.LND;
 
@@ -16,28 +17,37 @@ namespace Lightning.Metrics
             this.nodeAliasCache = new Dictionary<string, string>();
         }
 
-        public async Task Refresh(LnrpcListChannelsResponse listChannelsResponse)
+        public async Task RefreshOnlyIfNecessary(LnrpcListChannelsResponse listChannelsResponse, LnrpcPendingChannelsResponse pendingChannelsResponse)
         {
+            var allPublicKeys = new List<string>();
+
             if (listChannelsResponse?.Channels != null)
             {
-                foreach (var channel in listChannelsResponse.Channels)
+                allPublicKeys.AddRange(listChannelsResponse.Channels.Select(c => c.Remote_pubkey));
+            }
+
+            if (pendingChannelsResponse?.Pending_open_channels != null)
+            {
+                allPublicKeys.AddRange(pendingChannelsResponse.Pending_open_channels.Select(c => c.Channel.Remote_node_pub));
+            }
+
+            foreach (var publicKey in allPublicKeys)
+            {
+                if (this.nodeAliasCache.ContainsKey(publicKey))
                 {
-                    if (this.nodeAliasCache.ContainsKey(channel.Remote_pubkey))
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        var nodeInfo = await this.client.SwaggerClient.GetNodeInfoAsync(channel.Remote_pubkey).ConfigureAwait(false);
-                        this.nodeAliasCache.Add(nodeInfo.Node.Pub_key, nodeInfo.Node.Alias);
-                    }
+                    continue;
+                }
+                else
+                {
+                    var nodeInfo = await this.client.SwaggerClient.GetNodeInfoAsync(publicKey).ConfigureAwait(false);
+                    this.nodeAliasCache.Add(nodeInfo.Node.Pub_key, nodeInfo.Node.Alias);
                 }
             }
         }
 
-        public string GetNodeAlias(string pub_key)
+        public string GetNodeAlias(string publicKey)
         {
-            return this.nodeAliasCache[pub_key];
+            return this.nodeAliasCache[publicKey];
         }
     }
 }

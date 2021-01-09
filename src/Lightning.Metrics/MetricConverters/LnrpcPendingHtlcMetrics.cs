@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using BTCPayServer.Lightning.LND;
 using InfluxDB.Collector;
 
@@ -21,11 +21,11 @@ namespace Lightning.Metrics.MetricConverters
         {
             foreach (var pendingHtlcs in parent.Pending_htlcs)
             {
-                metrics.Write($"{configuration.MetricPrefix}_{MetricName}", this.GetFields(pendingHtlcs), this.GetTags(parent));
+                this.metrics.Write($"{this.configuration.MetricPrefix}_{MetricName}", GetFields(pendingHtlcs), GetTags(parent));
             }
         }
 
-        private Dictionary<string, object> GetFields(LnrpcPendingHTLC metric)
+        private static Dictionary<string, object> GetFields(LnrpcPendingHTLC metric)
         {
             return new Dictionary<string, object>
             {
@@ -37,7 +37,7 @@ namespace Lightning.Metrics.MetricConverters
             };
         }
 
-        private Dictionary<string, string> GetTags(PendingChannelsResponseForceClosedChannel parent)
+        private static Dictionary<string, string> GetTags(PendingChannelsResponseForceClosedChannel parent)
         {
             return new Dictionary<string, string>
             {

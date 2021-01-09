@@ -21,7 +21,7 @@ namespace Lightning.Metrics.MetricConverters
             {
                 foreach (var pendingForceCLose in pendingChannelsResponse.Pending_force_closing_channels)
                 {
-                    metrics.Write($"{configuration.MetricPrefix}_forced_closed_channels", GetFields(pendingForceCLose), GetTags(pendingForceCLose));
+                    this.metrics.Write($"{this.configuration.MetricPrefix}_forced_closed_channels", GetFields(pendingForceCLose), GetTags(pendingForceCLose));
 
                     new LnrpcPendingHtlcMetrics(this.configuration, this.metrics).WriteMetrics(pendingForceCLose);
                 }

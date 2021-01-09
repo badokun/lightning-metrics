@@ -1,5 +1,4 @@
-﻿using System;
-using NBitcoin;
+using System;
 
 namespace Lightning.Metrics
 {
@@ -23,13 +22,21 @@ namespace Lightning.Metrics
         public string MacaroonHex { get; set; }
         public string CertThumbprintHex { get; set; }
 
+        public bool UseMempoolBackend { get; set; }
+        public string MempoolApiUri { get; set; }
+
         public void Validate()
         {
             const int minInterval = 10;
 
-            if (IntervalSeconds < minInterval)
+            if (this.IntervalSeconds < minInterval)
             {
-                throw new ArgumentException($"The {nameof(IntervalSeconds)} should be greater than {minInterval}");
+                throw new ArgumentException($"The {nameof(this.IntervalSeconds)} should be greater than {minInterval}");
+            }
+
+            if (this.UseMempoolBackend && string.IsNullOrEmpty(this.MempoolApiUri))
+            {
+                throw new ArgumentException($"The {nameof(this.MempoolApiUri)} must not be null if the mempool backend is enabled");
             }
         }
     }

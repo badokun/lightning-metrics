@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Lightning.Metrics.MetricConverters
 {
@@ -13,17 +13,16 @@ namespace Lightning.Metrics.MetricConverters
 
         public static int ToInt(this bool? value)
         {
-            if (value.HasValue)
-            {
-                return Convert.ToInt32(value.Value);
-            }
-
-            return 0;
+            return value.HasValue ? Convert.ToInt32(value.Value) : 0;
         }
 
         public static string Left(this string value, int maxLength)
         {
-            if (string.IsNullOrEmpty(value)) return value;
+            if (string.IsNullOrEmpty(value))
+            {
+                return value;
+            }
+
             maxLength = Math.Abs(maxLength);
 
             return (value.Length <= maxLength

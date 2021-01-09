@@ -17,7 +17,7 @@ namespace Lightning.Metrics.MetricConverters
 
         public void WriteMetrics(LnrpcNetworkInfo networkInfo)
         {
-            metrics.Write($"{configuration.MetricPrefix}_networkinfo", GetFields(networkInfo));
+            this.metrics.Write($"{this.configuration.MetricPrefix}_networkinfo", GetFields(networkInfo));
         }
 
         private static Dictionary<string, object> GetFields(LnrpcNetworkInfo networkInfo)

@@ -17,7 +17,7 @@ namespace Lightning.Metrics.MetricConverters
 
         public void WriteMetrics(LnrpcChannelBalanceResponse channelBalance)
         {
-            metrics.Write($"{configuration.MetricPrefix}_channel_balance", GetFields(channelBalance));
+            this.metrics.Write($"{this.configuration.MetricPrefix}_channel_balance", GetFields(channelBalance));
         }
 
         private static Dictionary<string, object> GetFields(LnrpcChannelBalanceResponse channelBalance)

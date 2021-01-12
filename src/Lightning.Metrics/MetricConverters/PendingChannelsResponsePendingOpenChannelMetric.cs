@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using BTCPayServer.Lightning.LND;
 using InfluxDB.Collector;
 
@@ -24,7 +24,7 @@ namespace Lightning.Metrics.MetricConverters
                 foreach (var pendingOpen in pendingChannelsResponse.Pending_open_channels)
                 {
                     var nodeAlias = this.nodeAliasCache.GetNodeAlias(pendingOpen.Channel.Remote_node_pub);
-                    metrics.Write($"{configuration.MetricPrefix}_pending_open_channels", GetFields(pendingOpen), GetTags(nodeAlias));
+                    this.metrics.Write($"{this.configuration.MetricPrefix}_pending_open_channels", GetFields(pendingOpen), GetTags(nodeAlias));
                 }
             }
         }

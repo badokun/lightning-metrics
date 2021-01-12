@@ -24,7 +24,7 @@ namespace Lightning.Metrics.MetricConverters
                 foreach (var channel in listChannelsResponse.Channels)
                 {
                     var nodeAlias = this.nodeAliasCache.GetNodeAlias(channel.Remote_pubkey);
-                    metrics.Write($"{configuration.MetricPrefix}_list_channels", GetFields(channel), GetTags(nodeAlias));
+                    this.metrics.Write($"{this.configuration.MetricPrefix}_list_channels", GetFields(channel), GetTags(nodeAlias));
                 }
             }
         }

@@ -17,7 +17,7 @@ namespace Lightning.Metrics.MetricConverters
 
         public void WriteMetrics(LnrpcWalletBalanceResponse balance)
         {
-            this.metrics.Write($"{configuration.MetricPrefix}_balance", GetFields(balance));
+            this.metrics.Write($"{this.configuration.MetricPrefix}_balance", GetFields(balance));
         }
 
         private static Dictionary<string, object> GetFields(LnrpcWalletBalanceResponse balance)

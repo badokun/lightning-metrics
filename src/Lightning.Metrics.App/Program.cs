@@ -1,6 +1,8 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using McMaster.Extensions.CommandLineUtils;
 using Newtonsoft.Json;
 // ReSharper disable UnassignedGetOnlyAutoProperty
@@ -9,9 +11,7 @@ namespace Lightning.Metrics.App
 {
     class Program
     {
-        public static int Main(string[] args)
-            => CommandLineApplication.Execute<Program>(args);
-
+        public static async Task<int> Main(string[] args) => await CommandLineApplication.ExecuteAsync<Program>(args);
 
         [Option("--influxDbUri", Description = "The InfluxDb Uri. E.g. http://192.168.1.40:8086")]
         [Required]
@@ -32,7 +32,8 @@ namespace Lightning.Metrics.App
         [Option("--certThumbprintHex", Description = "The hex string of the tls.cert. See README.md on how to extract this value")]
         [Required]
         public string CertThumbprintHex { get; }
-        
+
+
         [Option("--interval", Description = "The interval in seconds to request metrics. Defaults to 10")]
         public int IntervalSeconds { get; } = 10;
 
@@ -41,7 +42,13 @@ namespace Lightning.Metrics.App
 
         [Option("--metricPrefix", Description = "Prefix all metrics pushed into the InfluxDb. Defaults to lightning")]
         public string MetricPrefix { get; } = "lightning";
-        
+
+        [Option("--use-mempool", Description = "https://github.com/mempool/mempool By default it is disabled.")]
+        public bool UseMempoolBackend { get; } = false;
+
+        [Option("--mempoolApiUri", Description = "The mempool Rest Api Uri. Defaults to https://mempool.space/api/v1")]
+        public string MempoolApiUri { get; } = "https://mempool.space/api/v1";
+
 
         [Option("--test-influxDb", Description = "Test connectivity to the InfluxDb")]
         public bool TestInfluxDb { get; }
@@ -49,7 +56,7 @@ namespace Lightning.Metrics.App
         [Option("--test-lndApi", Description = "Test connectivity to the Lnd Rest Api")]
         public bool TestLndApi { get; }
 
-        private void OnExecute()
+        private async Task OnExecuteAsync(CancellationToken ct)
         {
             MetricsConfiguration config = null;
             try
@@ -63,7 +70,9 @@ namespace Lightning.Metrics.App
                     CertThumbprintHex = CertThumbprintHex,
                     IntervalSeconds = IntervalSeconds,
                     InfluxDbName = InfluxDbName,
-                    MetricPrefix = MetricPrefix
+                    MetricPrefix = MetricPrefix,
+                    UseMempoolBackend = UseMempoolBackend,
+                    MempoolApiUri = MempoolApiUri
                 };
 
                 config.Validate();
@@ -77,18 +86,18 @@ namespace Lightning.Metrics.App
             try
             {
                 var client = new MetricsClient(config);
-                if (TestInfluxDb)
+                if (this.TestInfluxDb)
                 {
                     client.TestInfluxDb();
                 }
-                else if (TestLndApi)
+                else if (this.TestLndApi)
                 {
                     client.TestLndApi();
                 }
                 else
                 {
                     var version = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
-                    client.Start(version).Wait();
+                    await client.Start(version, ct).ConfigureAwait(false);
                 }
             }
             catch (Exception e)

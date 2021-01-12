@@ -83,6 +83,13 @@ If you're looking to run this on a Raspberry Pi that was setup using the guide a
     * num_nodes
     * graph_diameter
     * max_out_degree
+* recommended_onchain_fees
+  * tags:
+    * host
+  * fields:
+    * fastestFee
+    * halfHourFee
+    * hourFee
 
 ## Configuration
 

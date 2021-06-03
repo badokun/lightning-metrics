@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using BTCPayServer.Lightning.LND;
 using InfluxDB.Collector;
 
@@ -17,7 +17,10 @@ namespace Lightning.Metrics.MetricConverters
 
         public void WriteMetrics(LnrpcNetworkInfo networkInfo)
         {
-            this.metrics.Write($"{this.configuration.MetricPrefix}_networkinfo", GetFields(networkInfo));
+            if (networkInfo != null)
+            {
+                this.metrics.Write($"{this.configuration.MetricPrefix}_networkinfo", GetFields(networkInfo));
+            }
         }
 
         private static Dictionary<string, object> GetFields(LnrpcNetworkInfo networkInfo)

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ namespace Lightning.Metrics
             this.configuration = configuration;
             this.metrics = metrics;
 
-            this.client = new RestClient(configuration.MempoolApiUri);
+            this.client = new RestClient(configuration.MempoolApiUri) { Timeout = 8000 };
             this.feesRequest = new RestRequest("fees/recommended", DataFormat.Json);
         }
 
@@ -38,7 +39,7 @@ namespace Lightning.Metrics
             }
             else
             {
-                Logger.Error("No data could be retrieved from the mempool backend.");
+                Logger.Error($"No data could be retrieved from the mempool backend: {this.configuration.MempoolApiUri} ResponseStatus: {this.feesResponse.ResponseStatus}");
             }
         }
 

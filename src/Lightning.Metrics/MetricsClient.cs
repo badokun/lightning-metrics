@@ -13,6 +13,8 @@ namespace Lightning.Metrics
     {
         private readonly MetricsConfiguration configuration;
 
+        private DateTime lastNetworkInfoPollingTime = DateTime.MinValue;
+
         public MetricsClient(MetricsConfiguration configuration)
         {
             this.configuration = configuration;
@@ -45,9 +47,9 @@ namespace Lightning.Metrics
 
                 try
                 {
+                    var networkInfo = await this.GetNetworkInfoAfterTenfoldWaitingTime(lndClient, ct).ConfigureAwait(false);
                     var balance = await lndClient.SwaggerClient.WalletBalanceAsync(ct).ConfigureAwait(false);
                     var channelBalance = await lndClient.SwaggerClient.ChannelBalanceAsync(ct).ConfigureAwait(false);
-                    var networkInfo = await lndClient.SwaggerClient.GetNetworkInfoAsync(ct).ConfigureAwait(false);
                     var pendingChannels = await lndClient.SwaggerClient.PendingChannelsAsync(ct).ConfigureAwait(false);
                     var channelList = await lndClient.SwaggerClient.ListChannelsAsync(null, null, null, null, ct).ConfigureAwait(false);
 
@@ -66,6 +68,12 @@ namespace Lightning.Metrics
                 catch (Exception e)
                 {
                     Logger.Error(e.Message);
+
+                    if (e.InnerException != null)
+                    {
+                        Logger.Error(e.InnerException.Message);
+                    }
+
                     lndClient = this.CreateLndClient();
                     metrics = this.CreateMetricsCollector();
                 }
@@ -89,6 +97,18 @@ namespace Lightning.Metrics
             var balanceTest = client.SwaggerClient.WalletBalanceAsync();
             balanceTest.Wait();
             Logger.Debug("LndApi test operation completed successfully");
+        }
+
+        private async Task<LnrpcNetworkInfo> GetNetworkInfoAfterTenfoldWaitingTime(LndClient lndClient, CancellationToken ct)
+        {
+            if ((DateTime.Now - this.lastNetworkInfoPollingTime).TotalMinutes >= this.configuration.IntervalSeconds)
+            {
+                this.lastNetworkInfoPollingTime = DateTime.Now;
+
+                return await lndClient.SwaggerClient.GetNetworkInfoAsync(ct).ConfigureAwait(false);
+            }
+
+            return null;
         }
 
         private LndClient CreateLndClient()
